@@ -39,7 +39,24 @@ export function productKey(descriptionRaw: string, sku: string | null): string {
 }
 
 function excerpt(hits: TariffHit[]) {
-  return hits.map((h) => `id=${h.id} | code=${h.hsCode} | ka=${h.descriptionKa} | en=${h.descriptionEn} | duty=${h.dutyRate}% | notes=${h.headingNotes ?? ""}`).join("\n");
+  return hits
+    .map((h) => `HS_CODE=${h.hsCode} | ka=${h.descriptionKa} | en=${h.descriptionEn} | duty=${h.dutyRate}% | notes=${h.headingNotes ?? ""} | tariff_line_id=${h.id}`)
+    .join("\n");
+}
+
+/** Normalize model candidates: recover codes given as tariff_line_id, strip formatting, drop anything not a 10-digit code from the excerpt. */
+function normalizeCandidates(cands: HsClassification["candidates"], byId: Map<string, TariffHit>, byCode: Map<string, TariffHit>) {
+  const out: HsClassification["candidates"] = [];
+  const rejected: string[] = [];
+  for (const c of cands) {
+    let code = String(c.hs_code).trim();
+    const viaId = byId.get(code);
+    if (viaId) code = viaId.hsCode;
+    else code = code.replace(/\D/g, "");
+    if (/^\d{10}$/.test(code) && byCode.has(code)) out.push({ ...c, hs_code: code });
+    else rejected.push(String(c.hs_code));
+  }
+  return { out, rejected };
 }
 
 async function llmClassify(line: ClassifyLine, hits: TariffHit[], supplierName: string | null, modelId: string, thinkingBudget?: number): Promise<{ out: HsClassification; usage?: { inputTokens?: number; outputTokens?: number } }> {
@@ -99,12 +116,13 @@ export async function classifyLine(
   for (let attempt = 0; attempt < 3; attempt++) {
     const res = await llmClassify(line, hits, ctx.supplierName, modelId, ctx.thinkingBudget);
     usage = res.usage;
-    const bad = res.out.candidates.filter((c) => !byCode.has(c.hs_code));
-    if (bad.length === 0) {
-      out = res.out;
+    const norm = normalizeCandidates(res.out.candidates, byId, byCode);
+    if (norm.out.length > 0) {
+      out = { ...res.out, candidates: norm.out };
+      if (norm.rejected.length) lastError = `dropped invalid candidates: ${norm.rejected.join(",")}`;
       break;
     }
-    lastError = `codes not in tariff: ${bad.map((b) => b.hs_code).join(",")}`;
+    lastError = `no valid tariff codes in response: ${norm.rejected.join(",")}`;
   }
   const hash = promptHash([CLASSIFY_SYSTEM, query, hits.map((h) => h.id)]);
   if (!out) {

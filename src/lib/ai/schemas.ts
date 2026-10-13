@@ -6,7 +6,8 @@ const money = z.preprocess(
   z.string().regex(/^-?\d+(\.\d{1,4})?$/, "decimal string"),
 );
 const conf = z.preprocess((v) => (typeof v === "number" ? Math.min(1, Math.max(0, v)) : v), z.number().min(0).max(1));
-const hsCode = z.preprocess((v) => (typeof v === "string" ? v.replace(/\D/g, "") : v), z.string().regex(/^\d{10}$/));
+/** Lenient at schema level (models sometimes echo an id); strict 10-digit + in-tariff check is done in classify.ts post-processing. */
+const hsCode = z.preprocess((v) => (typeof v === "number" ? String(v) : v), z.string().min(1).max(80));
 
 export const bboxSchema = z.object({ page: z.number().int().min(1), x: z.number(), y: z.number(), w: z.number(), h: z.number() }).nullable();
 

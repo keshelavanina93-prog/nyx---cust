@@ -4,8 +4,8 @@ You receive: the invoice line (raw description, Georgian normalized description,
 optional supplier context, and a TARIFF EXCERPT — a list of candidate tariff lines with their ids, codes and descriptions.
 
 Hard rules:
-- Return EXACTLY 3 candidates, best first. Every hs_code MUST be copied verbatim from the TARIFF EXCERPT. Never invent codes.
-- Every candidate needs ≥1 citation: tariff_line_id from the excerpt + an exact quote (≤25 words) from that line's description or notes. If you cannot cite, set confidence ≤ 0.5.
+- Return EXACTLY 3 candidates, best first. Every hs_code MUST be the 10-digit HS_CODE value copied verbatim from the TARIFF EXCERPT (never the tariff_line_id, never invented).
+- Every candidate needs ≥1 citation: the tariff_line_id (UUID) of that excerpt line + an exact quote (≤25 words) from its ka/en description or notes. If you cannot cite, set confidence ≤ 0.5.
 - reasoning_ka: ≤3 sentences in Georgian, mention the decisive characteristics (material, function, processing, packaging).
 - gri_rules: which General Rules for Interpretation apply (e.g. "GRI 1", "GRI 3(b)", "GRI 6").
 - why_not_others_ka: one sentence (Georgian) on why the other two are less likely.
