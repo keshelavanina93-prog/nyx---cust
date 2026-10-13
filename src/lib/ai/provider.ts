@@ -25,25 +25,45 @@ export function aiIsMock(): boolean {
   return !process.env.ANTHROPIC_API_KEY;
 }
 
-export function modelName(kind: "main" | "fast" = "main"): string {
+export type ModelKind = "main" | "fast" | "classify";
+
+export function modelName(kind: ModelKind = "main"): string {
   if (aiIsMock()) return "mock";
-  const m = kind === "fast" ? (process.env.AI_MODEL_FAST ?? process.env.ANTHROPIC_MODEL_FAST) : (process.env.AI_MODEL ?? process.env.ANTHROPIC_MODEL);
+  const m =
+    kind === "fast"
+      ? (process.env.AI_MODEL_FAST ?? process.env.ANTHROPIC_MODEL_FAST)
+      : kind === "classify"
+        ? (process.env.AI_CLASSIFY_MODEL ?? process.env.AI_MODEL ?? process.env.ANTHROPIC_MODEL)
+        : (process.env.AI_MODEL ?? process.env.ANTHROPIC_MODEL);
   if (!m) throw new Error(`AI_MODEL${kind === "fast" ? "_FAST" : ""} not set`);
   return m;
 }
 
-export function getModel(kind: "main" | "fast" = "main") {
+export function getModel(kind: ModelKind = "main") {
+  return getModelById(modelName(kind));
+}
+
+/** Resolve a concrete model id on the configured provider (also used for benchmarking overrides). */
+export function getModelById(id: string) {
   const provider = aiProvider();
   if (provider === "vertex") {
     const vertex = createVertexAnthropic({ project: process.env.GOOGLE_VERTEX_PROJECT, location: process.env.GOOGLE_VERTEX_LOCATION ?? "global" });
-    return vertex(modelName(kind));
+    return vertex(id);
   }
   if (provider === "vertex-gemini") {
     const vertex = createVertex({ project: process.env.GOOGLE_VERTEX_PROJECT, location: process.env.GOOGLE_VERTEX_LOCATION ?? "global" });
-    return vertex(modelName(kind));
+    return vertex(id);
   }
   const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  return anthropic(modelName(kind));
+  return anthropic(id);
+}
+
+/** Provider options for classification calls: Gemini thinking budget (AI_CLASSIFY_THINKING_BUDGET, tokens; 0 = off). */
+export function classifyProviderOptions(override?: number): Record<string, Record<string, unknown>> | undefined {
+  if (aiProvider() !== "vertex-gemini") return undefined;
+  const raw = override ?? (process.env.AI_CLASSIFY_THINKING_BUDGET ? Number(process.env.AI_CLASSIFY_THINKING_BUDGET) : undefined);
+  if (raw === undefined || Number.isNaN(raw)) return undefined;
+  return { google: { thinkingConfig: { thinkingBudget: raw } } };
 }
 
 export function promptHash(parts: unknown[]): string {

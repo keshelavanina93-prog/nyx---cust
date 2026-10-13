@@ -9,7 +9,7 @@ import type { Db } from "@/db/client";
 import { schema } from "@/db/client";
 import { hsClassificationSchema, type HsClassification } from "./schemas";
 import { CLASSIFY_SYSTEM } from "./prompts/classify";
-import { aiIsMock, getModel, logAiRun, modelName, promptHash } from "./provider";
+import { aiIsMock, getModelById, logAiRun, modelName, promptHash, classifyProviderOptions } from "./provider";
 import { mockClassify } from "./mock";
 import { searchTariff, type TariffHit } from "@/lib/tariff/search";
 import type { HsCandidate } from "@/db/schema";
@@ -42,10 +42,11 @@ function excerpt(hits: TariffHit[]) {
   return hits.map((h) => `id=${h.id} | code=${h.hsCode} | ka=${h.descriptionKa} | en=${h.descriptionEn} | duty=${h.dutyRate}% | notes=${h.headingNotes ?? ""}`).join("\n");
 }
 
-async function llmClassify(line: ClassifyLine, hits: TariffHit[], supplierName: string | null): Promise<{ out: HsClassification; usage?: { inputTokens?: number; outputTokens?: number } }> {
+async function llmClassify(line: ClassifyLine, hits: TariffHit[], supplierName: string | null, modelId: string, thinkingBudget?: number): Promise<{ out: HsClassification; usage?: { inputTokens?: number; outputTokens?: number } }> {
   if (aiIsMock()) return { out: mockClassify({ description: line.descriptionRaw, descriptionKa: line.descriptionNormalizedKa }, hits) };
   const { object, usage } = await generateObject({
-    model: getModel("main"),
+    model: getModelById(modelId),
+    providerOptions: classifyProviderOptions(thinkingBudget) as never,
     schema: hsClassificationSchema,
     schemaName: "HsClassification",
     system: CLASSIFY_SYSTEM,
@@ -67,7 +68,7 @@ ${excerpt(hits)}`,
 export async function classifyLine(
   db: Db,
   line: ClassifyLine,
-  ctx: { organizationId: string; shipmentId: string | null; supplierId: string | null; supplierName: string | null; tariffVersionId: string },
+  ctx: { organizationId: string; shipmentId: string | null; supplierId: string | null; supplierName: string | null; tariffVersionId: string; modelId?: string; thinkingBudget?: number },
 ): Promise<ClassifyResult> {
   const started = Date.now();
   // 1. Client memory (org-scoped ONLY)
@@ -91,11 +92,12 @@ export async function classifyLine(
   const byCode = new Map(hits.map((h) => [h.hsCode, h]));
 
   // 3. LLM with post-check + retry
+  const modelId = ctx.modelId ?? modelName("classify");
   let out: HsClassification | null = null;
   let usage: { inputTokens?: number; outputTokens?: number } | undefined;
   let lastError: string | null = null;
   for (let attempt = 0; attempt < 3; attempt++) {
-    const res = await llmClassify(line, hits, ctx.supplierName);
+    const res = await llmClassify(line, hits, ctx.supplierName, modelId, ctx.thinkingBudget);
     usage = res.usage;
     const bad = res.out.candidates.filter((c) => !byCode.has(c.hs_code));
     if (bad.length === 0) {
@@ -106,7 +108,7 @@ export async function classifyLine(
   }
   const hash = promptHash([CLASSIFY_SYSTEM, query, hits.map((h) => h.id)]);
   if (!out) {
-    await logAiRun({ organizationId: ctx.organizationId, shipmentId: ctx.shipmentId, purpose: "classify", model: modelName(), promptHash: hash, latencyMs: Date.now() - started, error: lastError }, db);
+    await logAiRun({ organizationId: ctx.organizationId, shipmentId: ctx.shipmentId, purpose: "classify", model: modelId, promptHash: hash, latencyMs: Date.now() - started, error: lastError }, db);
     throw new Error(`classification rejected after retries: ${lastError}`);
   }
 
@@ -156,7 +158,7 @@ export async function classifyLine(
     organizationId: ctx.organizationId,
     shipmentId: ctx.shipmentId,
     purpose: "classify",
-    model: modelName(),
+    model: modelId,
     promptHash: hash,
     inputTokens: usage?.inputTokens,
     outputTokens: usage?.outputTokens,
