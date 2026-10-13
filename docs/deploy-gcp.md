@@ -45,7 +45,26 @@ curl -s $URL/api/admin/ai-check -H "Authorization: Bearer $SEC"                 
 curl -s -X POST $URL/api/admin/ai-check -H "Authorization: Bearer $SEC" -F file=@tests/fixtures/invoices/tr-textiles-pdf/invoice.pdf   # real extraction + HS
 ```
 
-## Current AI configuration (interim): Gemini on Vertex AI
+## Current AI configuration: Gemini on Vertex AI (benchmarked 2026-10-13)
+Live service env: `AI_PROVIDER=vertex-gemini`, `AI_MODEL=gemini-2.5-pro` (invoice extraction),
+`AI_CLASSIFY_MODEL=gemini-2.5-flash` + `AI_CLASSIFY_THINKING_BUDGET=0` (HS classification), `AI_MODEL_FAST=gemini-2.5-flash`,
+`GOOGLE_VERTEX_LOCATION=europe-west1`. Billed to the GCP credits.
+
+Classification benchmark (same 3-line extraction, 2 runs each, placeholder tariff, correct codes known):
+
+| classify model | avg ms (3 lines, parallel) | top-1 | cited |
+|---|---|---|---|
+| gemini-2.5-flash, thinking=0 | ~6 200 | 6/6 | 14/14 |
+| gemini-2.5-flash, default thinking | ~20 100 | 6/6 | 14/14 |
+| gemini-2.5-pro, default thinking | ~36 200 | 6/6 | 14/14 |
+| gemini-2.5-pro, thinking=128 | schema errors | — | — |
+| gemini-3-flash-preview | not served in europe-west1 (global only) | — | — |
+
+End-to-end on the rendered PDF (3 runs, revision 9): 27–30 s total = 21–25 s extraction + 5–6 s classification, totals match,
+HS top-1 3/3, all candidates cited. Known model quirk handled in code: Flash sometimes returns the tariff_line_id instead of the
+HS code; `classify.ts` maps it back and drops invalid candidates instead of failing the call.
+
+## (Superseded) interim note
 Claude quota is still 0 (requests filed, contact connect@nyxcore.space), so the live service runs
 `AI_PROVIDER=vertex-gemini`, `AI_MODEL=gemini-2.5-pro`, `AI_MODEL_FAST=gemini-2.5-flash`, `GOOGLE_VERTEX_LOCATION=europe-west1`
 — billed to the GCP credits. Verified 2026-10-13 on the rendered test invoice: all header fields and 3 lines extracted
