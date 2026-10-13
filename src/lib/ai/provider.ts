@@ -1,9 +1,24 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { createVertexAnthropic } from "@ai-sdk/google-vertex/anthropic";
 import { createHash } from "node:crypto";
 import { getDb, schema, type Db } from "@/db/client";
 
+/**
+ * AI provider selection:
+ * - AI_PROVIDER=vertex  → Claude on Google Vertex AI (uses GCP credits; ADC / service account auth,
+ *                         GOOGLE_VERTEX_PROJECT + GOOGLE_VERTEX_LOCATION).
+ * - otherwise           → Anthropic API directly (ANTHROPIC_API_KEY).
+ * - AI_MOCK=true or no credentials → deterministic mock (fixtures).
+ * Model names are never hardcoded: ANTHROPIC_MODEL / ANTHROPIC_MODEL_FAST.
+ */
+export function aiProvider(): "vertex" | "anthropic" {
+  return process.env.AI_PROVIDER === "vertex" ? "vertex" : "anthropic";
+}
+
 export function aiIsMock(): boolean {
-  return process.env.AI_MOCK === "true" || !process.env.ANTHROPIC_API_KEY;
+  if (process.env.AI_MOCK === "true") return true;
+  if (aiProvider() === "vertex") return !process.env.GOOGLE_VERTEX_PROJECT;
+  return !process.env.ANTHROPIC_API_KEY;
 }
 
 export function modelName(kind: "main" | "fast" = "main"): string {
@@ -14,6 +29,13 @@ export function modelName(kind: "main" | "fast" = "main"): string {
 }
 
 export function getModel(kind: "main" | "fast" = "main") {
+  if (aiProvider() === "vertex") {
+    const vertex = createVertexAnthropic({
+      project: process.env.GOOGLE_VERTEX_PROJECT,
+      location: process.env.GOOGLE_VERTEX_LOCATION ?? "europe-west1",
+    });
+    return vertex(modelName(kind));
+  }
   const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   return anthropic(modelName(kind));
 }
@@ -27,18 +49,21 @@ function estimateCost(inputTokens: number, outputTokens: number): string {
   return ((inputTokens * 3 + outputTokens * 15) / 1_000_000).toFixed(6);
 }
 
-export async function logAiRun(run: {
-  organizationId: string | null;
-  shipmentId?: string | null;
-  purpose: "extract" | "classify" | "explain";
-  model: string;
-  promptHash: string;
-  inputTokens?: number;
-  outputTokens?: number;
-  latencyMs: number;
-  output?: unknown;
-  error?: string | null;
-}, dbOverride?: Db): Promise<string> {
+export async function logAiRun(
+  run: {
+    organizationId: string | null;
+    shipmentId?: string | null;
+    purpose: "extract" | "classify" | "explain";
+    model: string;
+    promptHash: string;
+    inputTokens?: number;
+    outputTokens?: number;
+    latencyMs: number;
+    output?: unknown;
+    error?: string | null;
+  },
+  dbOverride?: Db,
+): Promise<string> {
   const db = dbOverride ?? (await getDb());
   const [row] = await db
     .insert(schema.aiRuns)
@@ -46,7 +71,7 @@ export async function logAiRun(run: {
       organizationId: run.organizationId,
       shipmentId: run.shipmentId ?? null,
       purpose: run.purpose,
-      model: run.model,
+      model: `${aiIsMock() ? "" : aiProvider() + ":"}${run.model}`,
       promptHash: run.promptHash,
       inputTokens: run.inputTokens ?? null,
       outputTokens: run.outputTokens ?? null,

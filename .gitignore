@@ -47,3 +47,5 @@ next-env.d.ts
 tests/fixtures/sad-xml/real/
 playwright-report/
 test-results/
+
+.vercel

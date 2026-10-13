@@ -4,7 +4,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@electric-sql/pglite", "postgres", "exceljs"],
+  output: "standalone",
+  serverExternalPackages: ["@electric-sql/pglite", "postgres", "exceljs", "@google-cloud/storage"],
   experimental: {
     serverActions: { bodySizeLimit: "25mb" },
   },

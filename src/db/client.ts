@@ -40,7 +40,12 @@ async function createPostgres(url: string): Promise<Db> {
   const postgres = (await import("postgres")).default;
   const { drizzle } = await import("drizzle-orm/postgres-js");
   const { migrate } = await import("drizzle-orm/postgres-js/migrator");
-  const client = postgres(url, { max: 5, prepare: false });
+  // Cloud SQL (Cloud Run) connects over a unix socket: postgres://user:pw@localhost/db?host=/cloudsql/PROJECT:REGION:INSTANCE
+  const u = new URL(url);
+  const socketHost = u.searchParams.get("host");
+  const client = socketHost?.startsWith("/")
+    ? postgres({ host: socketHost, database: u.pathname.replace(/^\//, ""), username: decodeURIComponent(u.username), password: decodeURIComponent(u.password), max: 5, prepare: false })
+    : postgres(url, { max: 5, prepare: false });
   const db = drizzle(client, { schema });
   if (process.env.DB_AUTO_MIGRATE !== "false") {
     await migrate(db, { migrationsFolder });

@@ -1,0 +1,13 @@
+node_modules
+.next
+.data
+.git
+.vercel
+.claude
+test-results
+playwright-report
+tests/fixtures/sad-xml/real
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
