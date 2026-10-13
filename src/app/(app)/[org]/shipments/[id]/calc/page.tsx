@@ -1,11 +1,17 @@
+import Link from "next/link";
 import { eq } from "drizzle-orm";
+import { ArrowRight, Calculator, CalendarDays, Coins, FileClock, Landmark, Scale } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { getDb, schema } from "@/db/client";
 import { Stepper } from "@/components/stepper";
-import { Alert, Badge, Card, CardContent, CardHeader, CardTitle, CardDescription, Field, Input, Stat, Table, Th, Td } from "@/components/ui/primitives";
-import { SubmitButton, Explain } from "@/components/ui/client";
+import { Alert, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/primitives";
+import { Explain } from "@/components/ui/client";
 import { Button } from "@/components/ui/button";
-import { formatGel } from "@/lib/money";
+import { EmptyState } from "@/components/ui/empty-state";
+import { CalcKpis } from "@/components/shipment/calc-kpis";
+import { CalcChart } from "@/components/shipment/calc-chart";
+import { CalcBreakdown, FeeCompare, type BreakdownRow } from "@/components/shipment/calc-breakdown";
+import { CalcControls, FxMissing } from "@/components/shipment/calc-controls";
 import { fmtDate } from "@/lib/format";
 import { shipmentPage } from "../_lib";
 import { calculateAction, fetchNbgAction, manualRateAction, setRegistrationDateAction } from "../../actions";
@@ -27,199 +33,206 @@ export default async function CalcPage({ params, searchParams }: { params: Promi
   const manual = manualRateAction.bind(null, slug, sid);
   const setDate = setRegistrationDateAction.bind(null, slug, sid);
 
+  const rows: BreakdownRow[] = (calc?.breakdown ?? []).map((b) => {
+    const vr = full.decisionByLine.get(b.line_id)?.valueRisk;
+    const d = full.decisionByLine.get(b.line_id);
+    const risk =
+      !vr || vr.level === "insufficient_data" ? (
+        <Badge title={t("valueRiskInsufficient")}>{t("valueRiskInsufficientShort")}</Badge>
+      ) : vr.level === "none" ? (
+        <Badge tone="ok" dot title={t("valueRiskNone")}>
+          {t("valueRiskNoneShort")}
+        </Badge>
+      ) : (
+        <Badge tone={vr.level === "high" ? "danger" : "warn"} dot title={t("valueRiskWarn", { pct: String(vr.deviation_pct ?? "").replace("-", ""), median: vr.own_median ?? "", basis: t(`basis_${vr.basis === "none" ? "per_unit" : vr.basis}`), n: vr.n })}>
+          {vr.level} · {vr.deviation_pct}%
+        </Badge>
+      );
+    return {
+      lineId: b.line_id,
+      lineNo: b.line_no,
+      hsCode: b.hs_code,
+      description: b.description,
+      invoiceValueGel: b.invoice_value_gel,
+      freightGel: b.freight_alloc_gel,
+      insuranceGel: b.insurance_alloc_gel,
+      otherGel: b.other_alloc_gel,
+      customsValue: b.customs_value_gel,
+      dutyRate: b.duty_rate,
+      duty: b.duty_gel,
+      excise: b.excise_gel,
+      vatBase: b.vat_base_gel,
+      vat: b.vat_gel,
+      total: b.total_gel,
+      penalty: d?.penaltyExposureGel ?? null,
+      formulas: b.formulas,
+      risk,
+    };
+  });
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <Stepper base={base} status={full.shipment.status} current="calc" />
       {unconfirmed > 0 ? <Alert tone="warn">{t("needsHs")}</Alert> : null}
       {sp.err === "fx_missing" ? (
-        <Alert tone="danger" title={t("fxMissing", { currency: sp.currency ?? "", date: fmtDate(sp.date) })}>
-          {canEdit ? (
-            <div className="mt-2 flex flex-wrap items-end gap-3">
-              <form action={fetchNbg}>
-                <SubmitButton size="sm" variant="secondary">
-                  {t("fetchNbg")}
-                </SubmitButton>
-              </form>
-              <form action={manual} className="flex flex-wrap items-end gap-2">
-                <input type="hidden" name="currency" value={sp.currency ?? ""} />
-                <input type="hidden" name="date" value={sp.date ?? fxDate} />
-                <Field label={`${t("manualRate")} (${sp.currency} → ₾)`}>
-                  <Input name="rateGel" inputMode="decimal" required className="h-8 w-32" />
-                </Field>
-                <Field label={t("manualRateNote")}>
-                  <Input name="note" required className="h-8 w-56" placeholder="nbg.gov.ge, 13.10.2026" />
-                </Field>
-                <SubmitButton size="sm">{tc("save")}</SubmitButton>
-              </form>
-            </div>
-          ) : null}
-        </Alert>
+        <FxMissing currency={sp.currency ?? ""} date={sp.date ?? fxDate} fetchNbg={fetchNbg} manual={manual} canEdit={canEdit} title={t("fxMissing", { currency: sp.currency ?? "", date: fmtDate(sp.date) })} />
       ) : null}
       {sp.err === "nbg_failed" ? <Alert tone="danger">NBG: {sp.msg}</Alert> : null}
       {sp.err === "unconfirmed_hs" ? <Alert tone="warn">{t("needsHs")}</Alert> : null}
-      {sp.err === "no_tariff" ? <Alert tone="danger">no active tariff version — /admin/tariff</Alert> : null}
+      {sp.err === "no_tariff" ? <Alert tone="danger">{t("noTariff")}</Alert> : null}
 
-      <div className="flex flex-wrap items-end gap-3">
-        {canEdit ? (
-          <form action={setDate} className="flex items-end gap-2">
-            <Field label={<Explain term="customsValue">{t("fxVersion")} · რეგისტრაციის თარიღი</Explain>}>
-              <Input type="date" name="declarationRegistrationDate" defaultValue={full.shipment.declarationRegistrationDate ?? fxDate} className="h-9" />
-            </Field>
-            <SubmitButton size="sm" variant="secondary">
-              {t("rerun")}
-            </SubmitButton>
-          </form>
-        ) : null}
-        {canEdit ? (
-          <form action={run}>
-            <SubmitButton disabled={unconfirmed > 0} data-testid="calculate">
-              {calc ? t("rerun") : t("run")}
-            </SubmitButton>
-          </form>
-        ) : null}
-      </div>
+      <CalcControls setDate={setDate} run={run} canEdit={canEdit} hasCalc={!!calc} blocked={unconfirmed > 0} registrationDate={full.shipment.declarationRegistrationDate ?? fxDate} />
 
       {calc ? (
         <>
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            <Stat label={<Explain term="customsValue">{t("customsValue")}</Explain>} value={formatGel(calc.customsValueGel)} />
-            <Stat label={t("duty")} value={formatGel(calc.dutyTotal)} />
-            <Stat label={t("excise")} value={formatGel(calc.exciseTotal)} />
-            <Stat label={t("vat")} value={formatGel(calc.vatTotal)} />
-            <Stat label={<Explain term="fee">{t("fee")}</Explain>} value={formatGel(calc.feeGel)} hint={`${calc.feeMode}${calc.feeOffHours ? " · " + t("feeOffHours") : ""}`} />
-            <Stat label={t("totalPayable")} value={formatGel(calc.totalPayableGel)} tone="brand" />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Stat label={t("broker")} value={formatGel(calc.brokerCostComparisonGel)} tone="ok" hint={t("brokerFormula", { rate: ctx.org.brokerCostPerHsGel, n: new Set(calc.breakdown.map((b) => b.hs_code)).size })} />
-            <Stat label={<Explain term="penalty">{t("penaltyTotal")}</Explain>} value={formatGel(calc.penaltyExposureTotalGel)} tone={Number(calc.penaltyExposureTotalGel) > 0 ? "warn" : "ok"} hint={tc("indicatorNotLegal")} />
-            <Stat
-              label={t("valueRisk")}
-              value={calc.valueRiskLevel === "none" ? t("valueRiskNone") : calc.valueRiskLevel}
-              tone={calc.valueRiskLevel === "high" ? "danger" : calc.valueRiskLevel === "medium" ? "warn" : "ok"}
-              hint={t("valueRiskIndicator")}
-            />
-          </div>
+          <CalcKpis
+            data={{
+              customsValue: calc.customsValueGel,
+              duty: calc.dutyTotal,
+              excise: calc.exciseTotal,
+              vat: calc.vatTotal,
+              fee: calc.feeGel,
+              total: calc.totalPayableGel,
+              broker: calc.brokerCostComparisonGel,
+              penalty: calc.penaltyExposureTotalGel,
+              valueRiskText: calc.valueRiskLevel === "none" ? t("valueRiskNone") : calc.valueRiskLevel,
+              valueRiskTone: calc.valueRiskLevel === "high" ? "danger" : calc.valueRiskLevel === "medium" ? "warn" : "ok",
+              valueRiskLevel: calc.valueRiskLevel,
+            }}
+            slots={{
+              customsValue: <Explain term="customsValue">{t("customsValue")}</Explain>,
+              fee: <Explain term="fee">{t("fee")}</Explain>,
+              penalty: <Explain term="penalty">{t("penaltyTotal")}</Explain>,
+              feeHint: (
+                <>
+                  {t(`feeModes.${calc.feeMode}`)}
+                  {calc.feeOffHours ? ` · ${t("feeOffHours")}` : ""}
+                </>
+              ),
+              brokerHint: t("brokerFormula", { rate: ctx.org.brokerCostPerHsGel, n: new Set(calc.breakdown.map((b) => b.hs_code)).size }),
+              penaltyHint: tc("indicatorNotLegal"),
+              valueRiskHint: t("valueRiskIndicator"),
+            }}
+          />
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("chartTitle")}</CardTitle>
+              <CardDescription>{t("chartSubtitle")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CalcChart
+                rows={calc.breakdown.map((b) => ({
+                  id: b.line_id,
+                  name: `#${b.line_no}`,
+                  hs: b.hs_code,
+                  description: b.description,
+                  duty: Number(b.duty_gel),
+                  excise: Number(b.excise_gel),
+                  vat: Number(b.vat_gel),
+                }))}
+              />
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>
               <CardTitle>{t("line")}</CardTitle>
-              <CardDescription>{t("howCalculated")}: გახსენი ხაზის დეტალები.</CardDescription>
+              <CardDescription>{t("breakdownHint")}</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <thead>
-                  <tr>
-                    <Th>#</Th>
-                    <Th>HS</Th>
-                    <Th>{t("customsValue")}</Th>
-                    <Th>{t("duty")}</Th>
-                    <Th>{t("excise")}</Th>
-                    <Th>{t("vat")}</Th>
-                    <Th>{tc("total")}</Th>
-                    <Th>{t("penaltyTotal")}</Th>
-                    <Th>{t("valueRisk")}</Th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {calc.breakdown.map((b) => {
-                    const d = full.decisionByLine.get(b.line_id);
-                    const vr = d?.valueRisk;
-                    return (
-                      <tr key={b.line_id}>
-                        <Td className="num">{b.line_no}</Td>
-                        <Td>
-                          <span className="num font-medium">{b.hs_code}</span>
-                          <div className="text-xs text-slate-500">{b.description}</div>
-                          <details className="mt-1 text-xs text-slate-600">
-                            <summary className="cursor-pointer text-brand-600">{t("howCalculated")}</summary>
-                            <ul className="mt-1 space-y-0.5">
-                              {Object.entries(b.formulas).map(([k, v]) => (
-                                <li key={k}>
-                                  <span className="font-medium">{k}:</span> {v}
-                                </li>
-                              ))}
-                            </ul>
-                          </details>
-                        </Td>
-                        <Td className="num">{formatGel(b.customs_value_gel)}</Td>
-                        <Td className="num">
-                          {formatGel(b.duty_gel)} <span className="text-xs text-slate-500">({b.duty_rate}%)</span>
-                        </Td>
-                        <Td className="num">{formatGel(b.excise_gel)}</Td>
-                        <Td className="num">{formatGel(b.vat_gel)}</Td>
-                        <Td className="num font-medium">{formatGel(b.total_gel)}</Td>
-                        <Td className="num">{d?.penaltyExposureGel ? formatGel(d.penaltyExposureGel) : "—"}</Td>
-                        <Td>
-                          {!vr || vr.level === "insufficient_data" ? (
-                            <Badge>{t("valueRiskInsufficient")}</Badge>
-                          ) : vr.level === "none" ? (
-                            <Badge tone="ok">{t("valueRiskNone")}</Badge>
-                          ) : (
-                            <Badge tone={vr.level === "high" ? "danger" : "warn"} title={t("valueRiskWarn", { pct: String(vr.deviation_pct ?? "").replace("-", ""), median: vr.own_median ?? "", basis: t(`basis_${vr.basis === "none" ? "per_unit" : vr.basis}`), n: vr.n })}>
-                              {vr.level} · {vr.deviation_pct}%
-                            </Badge>
-                          )}
-                        </Td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+              <CalcBreakdown rows={rows} />
             </CardContent>
           </Card>
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-5 lg:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle>{t("feeAlternatives")}</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Scale className="size-4 text-primary" aria-hidden />
+                  {t("feeAlternatives")}
+                </CardTitle>
                 <CardDescription>
                   {t("feeNote")} {t("feeReverify")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <tbody>
-                    {calc.feeAlternatives.map((f) => (
-                      <tr key={f.mode} className={f.mode === calc.feeMode ? "bg-brand-50/50 font-medium" : undefined}>
-                        <Td>
-                          {f.mode} <span className="text-xs text-slate-500">{f.legal_ref}</span>
-                        </Td>
-                        <Td className="num text-right">
-                          {formatGel(f.fee_gel)} {f.off_hours_applied ? <Badge tone="warn">×2</Badge> : null}
-                        </Td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
+                <FeeCompare
+                  currentMode={calc.feeMode}
+                  rows={calc.feeAlternatives.map((f) => ({ mode: f.mode, legalRef: f.legal_ref, fee: f.fee_gel, offHoursApplied: f.off_hours_applied, needsReverification: f.needs_reverification }))}
+                />
               </CardContent>
             </Card>
-            <Card>
+
+            <Card className="flex flex-col">
               <CardHeader>
-                <CardTitle>{t("versions")}</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <FileClock className="size-4 text-primary" aria-hidden />
+                  {t("versions")}
+                </CardTitle>
+                <CardDescription>{t("versionsHint")}</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-1 text-sm">
-                <div>
-                  {t("tariffVersion")}: {tariff?.source} · {fmtDate(tariff?.effectiveFrom)} {tariff?.isPlaceholder ? <Badge tone="danger">{tc("placeholder")}</Badge> : null}
+              <CardContent className="flex flex-1 flex-col gap-4">
+                <dl className="space-y-3 text-sm">
+                  <VersionRow icon={<Landmark />} label={t("tariffVersion")}>
+                    <span>
+                      {tariff?.source} · <span className="num">{fmtDate(tariff?.effectiveFrom)}</span>
+                    </span>
+                    {tariff?.isPlaceholder ? <Badge tone="danger">{tc("placeholder")}</Badge> : null}
+                  </VersionRow>
+                  <VersionRow icon={<Coins />} label={t("feeSchedule")}>
+                    <span className="num">{fmtDate(calc.feeScheduleEffectiveFrom)}</span>
+                  </VersionRow>
+                  <VersionRow icon={<CalendarDays />} label={t("fxVersion")}>
+                    <span className="num">
+                      {calc.fxCurrency} {calc.fxRate}
+                    </span>
+                    <span className="num text-muted-foreground">
+                      {fmtDate(calc.fxDate)} · {calc.fxSource}
+                    </span>
+                  </VersionRow>
+                </dl>
+                <div className="rounded-lg bg-muted/60 p-3 text-xs">
+                  <p className="mb-1 font-medium">{t("assumptions")}</p>
+                  {calc.assumptions.length ? (
+                    <ul className="list-disc space-y-0.5 pl-4 text-muted-foreground">
+                      {calc.assumptions.map((a) => (
+                        <li key={a}>{a}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted-foreground">—</p>
+                  )}
                 </div>
-                <div>
-                  {t("feeSchedule")}: {fmtDate(calc.feeScheduleEffectiveFrom)}
-                </div>
-                <div>
-                  {t("fxVersion")}: {calc.fxCurrency} {calc.fxRate} · {fmtDate(calc.fxDate)} · {calc.fxSource}
-                </div>
-                <div className="text-xs text-slate-500">
-                  {t("assumptions")}: {calc.assumptions.join(", ") || "—"}
-                </div>
-                <div className="pt-2">
-                  <a href={`${base}/approve`}>
-                    <Button data-testid="to-approve">{t("toApprove")}</Button>
-                  </a>
+                <div className="mt-auto pt-1">
+                  <Button asChild size="lg" className="w-full sm:w-auto">
+                    <Link href={`${base}/approve`} data-testid="to-approve">
+                      {t("toApprove")}
+                      <ArrowRight aria-hidden />
+                    </Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
         </>
-      ) : null}
+      ) : (
+        <EmptyState icon={<Calculator />} title={t("notYet")} description={unconfirmed > 0 ? t("needsHs") : t("notYetHint")} />
+      )}
+    </div>
+  );
+}
+
+function VersionRow({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground [&_svg]:size-4" aria-hidden>
+        {icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <dt className="text-xs text-muted-foreground">{label}</dt>
+        <dd className="flex flex-wrap items-center gap-x-2 gap-y-1 font-medium">{children}</dd>
+      </div>
     </div>
   );
 }

@@ -1,50 +1,32 @@
 import { desc } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { getDb, schema } from "@/db/client";
-import { Badge, Card, CardContent, Table, Th, Td } from "@/components/ui/primitives";
+import { PageHeader } from "@/components/ui/page-header";
+import { AiRunsTable } from "@/components/admin/ai-runs-table";
 import { fmtDateTime } from "@/lib/format";
+
+const LIMIT = 200;
 
 export default async function AiRunsPage() {
   const t = await getTranslations("admin");
   const db = await getDb();
-  const rows = await db.select().from(schema.aiRuns).orderBy(desc(schema.aiRuns.createdAt)).limit(200);
+  const rows = await db.select().from(schema.aiRuns).orderBy(desc(schema.aiRuns.createdAt)).limit(LIMIT);
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t("aiRuns")}</h1>
-      <Card>
-        <CardContent className="pt-4">
-          <Table>
-            <thead>
-              <tr>
-                <Th>when</Th>
-                <Th>purpose</Th>
-                <Th>model</Th>
-                <Th>tokens</Th>
-                <Th>ms</Th>
-                <Th>cost $</Th>
-                <Th>error</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <Td className="num text-xs">{fmtDateTime(r.createdAt)}</Td>
-                  <Td>
-                    <Badge>{r.purpose}</Badge>
-                  </Td>
-                  <Td className="text-xs">{r.model}</Td>
-                  <Td className="num text-xs">
-                    {r.inputTokens ?? "—"} / {r.outputTokens ?? "—"}
-                  </Td>
-                  <Td className="num text-xs">{r.latencyMs}</Td>
-                  <Td className="num text-xs">{r.costUsd ?? "—"}</Td>
-                  <Td className="text-xs text-red-700">{r.error ?? ""}</Td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </CardContent>
-      </Card>
+    <div className="space-y-6">
+      <PageHeader title={t("aiRuns")} description={t("aiRunsDescPage", { n: LIMIT })} eyebrow={t("title")} />
+      <AiRunsTable
+        rows={rows.map((r) => ({
+          id: r.id,
+          when: fmtDateTime(r.createdAt),
+          purpose: r.purpose,
+          model: r.model,
+          inputTokens: r.inputTokens,
+          outputTokens: r.outputTokens,
+          latencyMs: r.latencyMs,
+          costUsd: r.costUsd == null ? null : String(r.costUsd),
+          error: r.error,
+        }))}
+      />
     </div>
   );
 }

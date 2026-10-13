@@ -1,22 +1,30 @@
 import Link from "next/link";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
+import { TZDate } from "@date-fns/tz";
+import { format, startOfWeek, subWeeks } from "date-fns";
+import { Activity, Package, PiggyBank, PackagePlus, Wallet } from "lucide-react";
 import { getDb, schema } from "@/db/client";
 import { requireOrg } from "@/lib/org";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
-import { Alert, Badge, Card, CardContent, Table, Th, Td } from "@/components/ui/primitives";
-import { formatGel } from "@/lib/money";
-import { fmtDate, daysBetween } from "@/lib/format";
-import { STATUS_TONE } from "@/lib/shipments/status";
+import { PageHeader } from "@/components/ui/page-header";
+import { Alert, Card, CardDescription, CardHeader, CardTitle, CardContent, Stat } from "@/components/ui/primitives";
+import { Reveal } from "@/components/marketing/reveal";
+import { ShipmentsChart, type WeekPoint } from "@/components/dashboard/shipments-chart";
+import { ShipmentsTable, type DashRow } from "@/components/dashboard/shipments-table";
+import { isInProgress } from "@/components/dashboard/status-groups";
+import { D, formatGel, sum } from "@/lib/money";
+import { APP_TZ, fmtDate, daysBetween } from "@/lib/format";
 import { loadActiveTariff, loadEcustomsProfile } from "@/lib/shipments/queries";
 import { todayIso } from "@/lib/utils";
+
+const WEEKS = 12;
 
 export default async function DashboardPage({ params }: { params: Promise<{ org: string }> }) {
   const { org } = await params;
   const ctx = await requireOrg(org);
   const t = await getTranslations("dashboard");
-  const ts = await getTranslations("status");
   const tn = await getTranslations("nav");
   const db = await getDb();
   const rows = await db.select().from(schema.shipments).where(eq(schema.shipments.organizationId, ctx.org.id)).orderBy(desc(schema.shipments.createdAt)).limit(100);
@@ -29,76 +37,115 @@ export default async function DashboardPage({ params }: { params: Promise<{ org:
   const today = todayIso();
   const expDays = profile.accessValidUntil ? daysBetween(today, profile.accessValidUntil) : null;
   const base = `/${ctx.org.slug}`;
+  const canCreate = ctx.role !== "viewer";
+
+  // ---- table rows (serialized for the client component) ----
+  const tableRows: DashRow[] = rows.map((s) => {
+    const c = latestCalc.get(s.id);
+    const pen = c ? Number(c.penaltyExposureTotalGel) : null;
+    return {
+      id: s.id,
+      reference: s.reference,
+      supplier: s.supplierNameRaw ?? null,
+      status: s.status,
+      createdLabel: fmtDate(s.createdAt),
+      totalPayable: c ? formatGel(c.totalPayableGel) : null,
+      brokerSaving: c ? formatGel(c.brokerCostComparisonGel) : null,
+      penaltyLabel: pen === null ? null : formatGel(pen),
+      penaltyIsZero: pen === 0,
+    };
+  });
+
+  // ---- KPIs ----
+  const now = new TZDate(new Date(), APP_TZ);
+  const monthKey = format(now, "yyyy-MM");
+  const inMonth = (d: Date) => format(new TZDate(d, APP_TZ), "yyyy-MM") === monthKey;
+  const live = rows.filter((s) => s.status !== "cancelled");
+  const monthRows = live.filter((s) => inMonth(s.createdAt));
+  const monthCalcs = monthRows.map((s) => latestCalc.get(s.id)).filter((c): c is NonNullable<typeof c> => !!c);
+  const allCalcs = live.map((s) => latestCalc.get(s.id)).filter((c): c is NonNullable<typeof c> => !!c);
+  const inProgress = rows.filter((s) => isInProgress(s.status)).length;
+  const payableMonth = sum(monthCalcs.map((c) => D(c.totalPayableGel)));
+  const saved = sum(allCalcs.map((c) => D(c.brokerCostComparisonGel)));
+
+  // ---- shipments per week (last 12 weeks, Mon-Sun, Asia/Tbilisi) ----
+  const thisWeek = startOfWeek(now, { weekStartsOn: 1 });
+  const weeks: WeekPoint[] = Array.from({ length: WEEKS }, (_, i) => {
+    const w = subWeeks(thisWeek, WEEKS - 1 - i);
+    return { key: format(w, "yyyy-MM-dd"), label: format(w, "dd.MM"), count: 0 };
+  });
+  const weekIndex = new Map(weeks.map((w, i) => [w.key, i]));
+  for (const s of rows) {
+    const i = weekIndex.get(format(startOfWeek(new TZDate(s.createdAt, APP_TZ), { weekStartsOn: 1 }), "yyyy-MM-dd"));
+    if (i !== undefined) weeks[i]!.count++;
+  }
+
+  const kpis = [
+    { label: t("kpiTotal"), value: String(rows.length), hint: t("kpiTotalHint", { n: monthRows.length }), icon: <Package aria-hidden />, tone: "neutral" as const },
+    { label: t("kpiInProgress"), value: String(inProgress), hint: t("kpiInProgressHint"), icon: <Activity aria-hidden />, tone: "info" as const },
+    { label: t("kpiPayable"), value: formatGel(payableMonth), hint: t("kpiPayableHint", { n: monthCalcs.length }), icon: <Wallet aria-hidden />, tone: "brand" as const },
+    { label: t("kpiSaved"), value: formatGel(saved), hint: t("kpiSavedHint"), icon: <PiggyBank aria-hidden />, tone: "ok" as const },
+  ];
 
   return (
     <AppShell ctx={ctx} active="dashboard">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        {ctx.role !== "viewer" ? (
-          <Link href={`${base}/shipments/new`}>
-            <Button data-testid="new-shipment">{tn("newShipment")}</Button>
-          </Link>
-        ) : null}
+      <PageHeader
+        eyebrow={ctx.org.name}
+        title={t("title")}
+        description={t("subtitle")}
+        actions={
+          canCreate ? (
+            <Button asChild data-testid="new-shipment">
+              <Link href={`${base}/shipments/new`}>
+                <PackagePlus aria-hidden />
+                {tn("newShipment")}
+              </Link>
+            </Button>
+          ) : null
+        }
+      />
+
+      {tariff?.isPlaceholder || profile.accessStatus !== "active" || (expDays !== null && expDays <= 14) ? (
+        <div className="mb-5 space-y-2">
+          {tariff?.isPlaceholder ? <Alert tone="danger">{t("placeholderBanner")}</Alert> : null}
+          {profile.accessStatus !== "active" ? (
+            <Alert tone="warn">
+              {t("accessBanner")}{" "}
+              <Link className="font-medium underline" href={`${base}/onboarding/ecustoms`}>
+                {tn("onboarding")} →
+              </Link>
+            </Alert>
+          ) : expDays !== null && expDays < 0 ? (
+            <Alert tone="danger">{t("accessExpired", { date: fmtDate(profile.accessValidUntil) })}</Alert>
+          ) : expDays !== null && expDays <= 14 ? (
+            <Alert tone="warn">{t("accessExpiring", { days: expDays, date: fmtDate(profile.accessValidUntil) })}</Alert>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {kpis.map((k, i) => (
+          <Reveal key={k.label} eager delay={i * 0.06} y={10}>
+            <Stat label={k.label} value={k.value} hint={k.hint} icon={k.icon} tone={k.tone} className="h-full" />
+          </Reveal>
+        ))}
       </div>
-      <div className="mb-4 space-y-2">
-        {tariff?.isPlaceholder ? <Alert tone="danger">{t("placeholderBanner")}</Alert> : null}
-        {profile.accessStatus !== "active" ? (
-          <Alert tone="warn">
-            {t("accessBanner")}{" "}
-            <Link className="underline" href={`${base}/onboarding/ecustoms`}>
-              {tn("onboarding")} →
-            </Link>
-          </Alert>
-        ) : expDays !== null && expDays < 0 ? (
-          <Alert tone="danger">{t("accessExpired", { date: fmtDate(profile.accessValidUntil) })}</Alert>
-        ) : expDays !== null && expDays <= 14 ? (
-          <Alert tone="warn">{t("accessExpiring", { days: expDays, date: fmtDate(profile.accessValidUntil) })}</Alert>
-        ) : null}
-      </div>
-      {rows.length === 0 ? (
-        <Card>
-          <CardContent className="pt-5 text-slate-600">{t("empty")}</CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <Table>
-            <thead>
-              <tr>
-                <Th>{t("reference")}</Th>
-                <Th>{t("supplier")}</Th>
-                <Th className="text-right">{t("totalPayable")}</Th>
-                <Th className="text-right">{t("vsBroker")}</Th>
-                <Th className="text-right">{t("penaltyRisk")}</Th>
-                <Th>{t("created")}</Th>
-                <Th>{ts("draft") ? "სტატუსი" : ""}</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((s) => {
-                const c = latestCalc.get(s.id);
-                const pen = c ? Number(c.penaltyExposureTotalGel) : null;
-                return (
-                  <tr key={s.id} className="hover:bg-slate-50">
-                    <Td>
-                      <Link href={`${base}/shipments/${s.id}`} className="font-medium text-brand-700 underline-offset-2 hover:underline">
-                        {s.reference}
-                      </Link>
-                    </Td>
-                    <Td className="text-slate-600">{s.supplierNameRaw ?? "—"}</Td>
-                    <Td className="num text-right">{c ? formatGel(c.totalPayableGel) : "—"}</Td>
-                    <Td className="num text-right text-green-800">{c ? `−${formatGel(c.brokerCostComparisonGel)}` : "—"}</Td>
-                    <Td className="num text-right">{pen === null ? "—" : <Badge tone={pen === 0 ? "ok" : "warn"}>{formatGel(pen)}</Badge>}</Td>
-                    <Td className="num text-slate-600">{fmtDate(s.createdAt)}</Td>
-                    <Td>
-                      <Badge tone={STATUS_TONE[s.status] ?? "neutral"}>{ts(s.status)}</Badge>
-                    </Td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        </Card>
-      )}
+
+      {rows.length > 0 ? (
+        <Reveal eager delay={0.2} y={10} className="mb-5">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">{t("chartTitle")}</CardTitle>
+              <CardDescription>{t("chartDesc")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ShipmentsChart data={weeks} />
+            </CardContent>
+          </Card>
+        </Reveal>
+      ) : null}
+
+      <ShipmentsTable rows={tableRows} base={base} canCreate={canCreate} />
     </AppShell>
   );
 }

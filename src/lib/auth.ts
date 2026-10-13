@@ -54,7 +54,8 @@ function lazyAdapter(): Adapter {
   return out as unknown as Adapter;
 }
 
-const devLoginEnabled = process.env.AUTH_DEV_LOGIN === "true" && process.env.NODE_ENV !== "production";
+/** Dev login: never in production builds, except an explicit local e2e override (E2E_PROD_BUILD=true) that is not set on hosted environments. */
+const devLoginEnabled = process.env.AUTH_DEV_LOGIN === "true" && (process.env.NODE_ENV !== "production" || process.env.E2E_PROD_BUILD === "true");
 
 const providers: NextAuthConfig["providers"] = [];
 if (process.env.AUTH_RESEND_KEY) {

@@ -3,29 +3,40 @@
 import * as React from "react";
 import { useFormStatus } from "react-dom";
 import { useTranslations } from "next-intl";
-import { Copy, Check, HelpCircle, Loader2 } from "lucide-react";
+import { Copy, Check, HelpCircle } from "lucide-react";
 import { Button, type ButtonProps } from "./button";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
+import { toast } from "./toaster";
 import { cn } from "@/lib/utils";
 
 export function CopyButton({ value, label, className }: { value: string; label?: string; className?: string }) {
   const t = useTranslations("common");
+  const ts = useTranslations("shell");
   const [done, setDone] = React.useState(false);
+  const timer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  React.useEffect(() => () => clearTimeout(timer.current), []);
   return (
     <button
       type="button"
-      className={cn("no-print inline-flex h-7 items-center gap-1 rounded border border-slate-300 bg-white px-2 text-xs hover:bg-slate-50", className)}
+      className={cn(
+        "no-print inline-flex h-7 items-center gap-1.5 rounded-md border border-input bg-card px-2 text-xs font-medium text-foreground shadow-xs transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/35 active:scale-[0.97]",
+        className,
+      )}
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(value);
           setDone(true);
-          setTimeout(() => setDone(false), 1500);
+          toast.success(t("copied"), { description: value.length > 60 ? `${value.slice(0, 57)}…` : value, duration: 2000 });
+          clearTimeout(timer.current);
+          timer.current = setTimeout(() => setDone(false), 1500);
         } catch {
-          /* ignore */
+          toast.error(ts("copyFailed"));
         }
       }}
       aria-label={label ?? t("copy")}
     >
-      {done ? <Check className="h-3 w-3 text-ok" /> : <Copy className="h-3 w-3" />}
+      {done ? <Check className="size-3 text-success" aria-hidden /> : <Copy className="size-3" aria-hidden />}
       {done ? t("copied") : (label ?? t("copy"))}
     </button>
   );
@@ -35,19 +46,24 @@ export function CopyButton({ value, label, className }: { value: string; label?:
 export function Explain({ term, children }: { term: keyof IntlMessages["terms"]; children?: React.ReactNode }) {
   const t = useTranslations("terms");
   const tc = useTranslations("common");
-  const [open, setOpen] = React.useState(false);
   return (
-    <span className="relative inline-flex items-center gap-1">
+    <span className="inline-flex items-center gap-1">
       {children}
-      <button type="button" aria-label={tc("explain")} aria-expanded={open} onClick={() => setOpen((o) => !o)} className="no-print text-slate-400 hover:text-brand-600">
-        <HelpCircle className="h-4 w-4" />
-      </button>
-      {open ? (
-        <span role="dialog" className="absolute left-0 top-full z-20 mt-1 w-72 rounded-md border bg-white p-3 text-xs leading-relaxed text-slate-700 shadow-lg">
-          <span className="mb-1 block font-semibold text-slate-900">{tc("explain")}</span>
-          {t(term)}
-        </span>
-      ) : null}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-label={tc("explain")}
+            className="no-print rounded-full text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/35"
+          >
+            <HelpCircle className="size-4" aria-hidden />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="text-xs leading-relaxed">
+          <span className="mb-1 block font-semibold text-foreground">{tc("explain")}</span>
+          <span className="text-muted-foreground">{t(term)}</span>
+        </PopoverContent>
+      </Popover>
     </span>
   );
 }
@@ -55,18 +71,28 @@ export function Explain({ term, children }: { term: keyof IntlMessages["terms"];
 export function SubmitButton({ children, pendingText, ...props }: ButtonProps & { pendingText?: string }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending || props.disabled} {...props}>
-      {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+    <Button type="submit" {...props} loading={pending || props.loading} disabled={props.disabled}>
       {pending && pendingText ? pendingText : children}
     </Button>
   );
 }
 
 export function LocaleSwitch({ locale }: { locale: string }) {
+  const t = useTranslations("common");
   return (
-    <form action="/api/locale" method="post" className="inline-flex items-center gap-1 text-xs">
+    <form action="/api/locale" method="post" className="inline-flex items-center rounded-lg bg-muted p-0.5 text-xs" role="group" aria-label={t("language")}>
       {["ka", "en"].map((l) => (
-        <button key={l} name="locale" value={l} className={cn("rounded px-2 py-1 uppercase", l === locale ? "bg-slate-200 font-semibold" : "hover:bg-slate-100")} type="submit">
+        <button
+          key={l}
+          name="locale"
+          value={l}
+          type="submit"
+          aria-pressed={l === locale}
+          className={cn(
+            "rounded-md px-2 py-1 font-medium uppercase transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/35",
+            l === locale ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+          )}
+        >
           {l}
         </button>
       ))}
@@ -82,18 +108,54 @@ export function PrintButton({ label }: { label: string }) {
   );
 }
 
-export function ConfirmSubmit({ message, children, ...props }: ButtonProps & { message: string }) {
+/** Submit button that asks for confirmation in a dialog before submitting its form. */
+export function ConfirmSubmit({ message, children, onClick, ...props }: ButtonProps & { message: string }) {
   const { pending } = useFormStatus();
+  const tc = useTranslations("common");
+  const ref = React.useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = React.useState(false);
+  const destructive = props.variant === "danger" || props.variant === "destructive";
   return (
-    <Button
-      type="submit"
-      disabled={pending || props.disabled}
-      onClick={(e) => {
-        if (!confirm(message)) e.preventDefault();
-      }}
-      {...props}
-    >
-      {children}
-    </Button>
+    <>
+      <Button
+        ref={ref}
+        type="submit"
+        {...props}
+        loading={pending || props.loading}
+        disabled={props.disabled}
+        onClick={(e) => {
+          onClick?.(e);
+          if (e.defaultPrevented) return;
+          e.preventDefault();
+          setOpen(true);
+        }}
+      >
+        {children}
+      </Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{tc("confirm")}</DialogTitle>
+            <DialogDescription>{message}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
+              {tc("cancel")}
+            </Button>
+            <Button
+              variant={destructive ? "destructive" : "default"}
+              onClick={() => {
+                setOpen(false);
+                const btn = ref.current;
+                // submit the original form with the original submitter (keeps name/value + formAction)
+                if (btn?.form) btn.form.requestSubmit(btn);
+              }}
+            >
+              {tc("confirm")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

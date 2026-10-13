@@ -4,7 +4,7 @@ import type { DeclarationModel } from "../model";
 /** XLS export: lines + calculation + versions (brief §5.7). */
 export async function buildXlsx(model: DeclarationModel): Promise<Buffer> {
   const wb = new ExcelJS.Workbook();
-  wb.creator = "Customs Copilot GE";
+  wb.creator = "Customs Copilot GE · NYXCore LLC";
   const d = model.declaration;
 
   const lines = wb.addWorksheet("ხაზები");

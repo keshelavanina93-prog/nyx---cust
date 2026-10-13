@@ -1,5 +1,7 @@
 # Customs Copilot GE
 
+Operated by **NYXCore LLC** (შპს NYXCore), identification number 406574390, registered in Tbilisi, Georgia on 13 October 2026.
+
 **განაბაჟე თვითონ, ბროკერის გარეშე.** Georgian-first web app for SME importers who self-declare with their own
 eCustoms (ASYCUDA World) access: invoice → AI extraction → HS top-3 with tariff citations (human confirms every
 line) → customs value / duty / VAT / excise / fees → approval card → field-by-field sheet, XLS and
