@@ -1,0 +1,7 @@
+{
+ "_note": "SYNTHETIC rendered PDF (Playwright) for real-AI extraction tests. HS codes refer to the PLACEHOLDER tariff.",
+ "tags": ["pdf", "real_ai"],
+ "extraction": { "currency": "USD", "incoterm": "FOB", "invoice_total": "5300.00",
+  "lines": [ {"line_no":1,"line_total":"2600.00","quantity":"400","unit_price":"6.50"}, {"line_no":2,"line_total":"1920.00","quantity":"600","unit_price":"3.20"}, {"line_no":3,"line_total":"780.00","quantity":"300","unit_price":"2.60"} ] },
+ "hs": { "1": "6302510000", "2": "3918100000", "3": "6302600000" }
+}
