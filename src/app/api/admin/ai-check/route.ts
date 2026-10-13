@@ -42,6 +42,7 @@ export async function POST(req: Request) {
   if (!(f instanceof File) || f.size === 0) return NextResponse.json({ error: "multipart field 'file' required" }, { status: 400 });
   const data = Buffer.from(await f.arrayBuffer());
   const started = Date.now();
+  let stage = "extract";
   try {
     const isJson = f.name.endsWith(".json") || (f.type || "").includes("json");
     const { extraction, aiRunId, totalsMismatch, sumOfLines } = isJson
@@ -57,6 +58,7 @@ export async function POST(req: Request) {
     const extractMs = Date.now() - started;
     const hs: unknown[] = [];
     const t1 = Date.now();
+    stage = "classify";
     const classifyModel = String(form.get("classifyModel") ?? "") || undefined;
     const tbRaw = form.get("thinkingBudget");
     const thinkingBudget = tbRaw !== null && tbRaw !== "" ? Number(tbRaw) : undefined;
@@ -72,6 +74,7 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({ ok: true, ms: Date.now() - started, extractMs, classifyMs: Date.now() - t1, classifyModel: classifyModel ?? modelName("classify"), thinkingBudget: thinkingBudget ?? null, aiRunId, totalsMismatch, sumOfLines, extraction, hs, tariff: tariff ? { source: tariff.source, placeholder: tariff.isPlaceholder } : null });
   } catch (e) {
-    return NextResponse.json({ ok: false, ms: Date.now() - started, error: (e as Error).message.slice(0, 500) }, { status: 502 });
+    const err = e as Error & { text?: string; cause?: { message?: string } };
+    return NextResponse.json({ ok: false, stage, ms: Date.now() - started, error: err.message.slice(0, 500), cause: err.cause?.message?.slice(0, 500) ?? null, text: err.text?.slice(0, 1500) ?? null }, { status: 502 });
   }
 }
