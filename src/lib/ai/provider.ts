@@ -1,39 +1,45 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createVertexAnthropic } from "@ai-sdk/google-vertex/anthropic";
+import { createVertex } from "@ai-sdk/google-vertex";
 import { createHash } from "node:crypto";
 import { getDb, schema, type Db } from "@/db/client";
 
 /**
- * AI provider selection:
- * - AI_PROVIDER=vertex  → Claude on Google Vertex AI (uses GCP credits; ADC / service account auth,
- *                         GOOGLE_VERTEX_PROJECT + GOOGLE_VERTEX_LOCATION).
- * - otherwise           → Anthropic API directly (ANTHROPIC_API_KEY).
+ * AI provider selection (AI_PROVIDER):
+ * - "vertex"        → Claude on Google Vertex AI (GCP credits; needs per-model quota granted by Google).
+ * - "vertex-gemini" → Gemini on Google Vertex AI (GCP credits; available immediately in a new project).
+ * - "anthropic"     → Anthropic API directly (ANTHROPIC_API_KEY).
  * - AI_MOCK=true or no credentials → deterministic mock (fixtures).
- * Model names are never hardcoded: ANTHROPIC_MODEL / ANTHROPIC_MODEL_FAST.
+ * Model ids are never hardcoded: AI_MODEL / AI_MODEL_FAST (fallback ANTHROPIC_MODEL / ANTHROPIC_MODEL_FAST).
  */
-export function aiProvider(): "vertex" | "anthropic" {
-  return process.env.AI_PROVIDER === "vertex" ? "vertex" : "anthropic";
+export type AiProvider = "vertex" | "vertex-gemini" | "anthropic";
+
+export function aiProvider(): AiProvider {
+  const p = process.env.AI_PROVIDER;
+  return p === "vertex" || p === "vertex-gemini" ? p : "anthropic";
 }
 
 export function aiIsMock(): boolean {
   if (process.env.AI_MOCK === "true") return true;
-  if (aiProvider() === "vertex") return !process.env.GOOGLE_VERTEX_PROJECT;
+  if (aiProvider() !== "anthropic") return !process.env.GOOGLE_VERTEX_PROJECT;
   return !process.env.ANTHROPIC_API_KEY;
 }
 
 export function modelName(kind: "main" | "fast" = "main"): string {
   if (aiIsMock()) return "mock";
-  const m = kind === "fast" ? process.env.ANTHROPIC_MODEL_FAST : process.env.ANTHROPIC_MODEL;
-  if (!m) throw new Error(`ANTHROPIC_MODEL${kind === "fast" ? "_FAST" : ""} not set`);
+  const m = kind === "fast" ? (process.env.AI_MODEL_FAST ?? process.env.ANTHROPIC_MODEL_FAST) : (process.env.AI_MODEL ?? process.env.ANTHROPIC_MODEL);
+  if (!m) throw new Error(`AI_MODEL${kind === "fast" ? "_FAST" : ""} not set`);
   return m;
 }
 
 export function getModel(kind: "main" | "fast" = "main") {
-  if (aiProvider() === "vertex") {
-    const vertex = createVertexAnthropic({
-      project: process.env.GOOGLE_VERTEX_PROJECT,
-      location: process.env.GOOGLE_VERTEX_LOCATION ?? "europe-west1",
-    });
+  const provider = aiProvider();
+  if (provider === "vertex") {
+    const vertex = createVertexAnthropic({ project: process.env.GOOGLE_VERTEX_PROJECT, location: process.env.GOOGLE_VERTEX_LOCATION ?? "global" });
+    return vertex(modelName(kind));
+  }
+  if (provider === "vertex-gemini") {
+    const vertex = createVertex({ project: process.env.GOOGLE_VERTEX_PROJECT, location: process.env.GOOGLE_VERTEX_LOCATION ?? "global" });
     return vertex(modelName(kind));
   }
   const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
