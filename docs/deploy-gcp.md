@@ -27,9 +27,15 @@ gcloud run deploy customs-copilot-ge --project=$P --region=$R --image $IMG:vN \
 ```
 Migrations run automatically on first DB access (`DB_AUTO_MIGRATE` defaults on).
 
+**Public access:** the organization enforces `iam.allowedPolicyMemberDomains` (domain-restricted sharing), which blocks
+`allUsers`. It is overridden at project level (`gcloud org-policies set-policy` with `allowAll: true`), after which
+`gcloud run services add-iam-policy-binding ... --member=allUsers --role=roles/run.invoker` succeeds (allow ~1–2 min to propagate).
+
+Live URL: https://customs-copilot-ge-265781216571.europe-west1.run.app
+
 ## First-time seed (reference data + placeholder tariff)
 ```bash
-curl -X POST https://<service-url>/api/admin/seed -H "Authorization: Bearer $(gcloud secrets versions access latest --secret CRON_SECRET --project $P)"
+curl -X POST https://<service-url>/api/admin/seed -d '' -H "Authorization: Bearer $(gcloud secrets versions access latest --secret CRON_SECRET --project $P)"
 ```
 
 ## Claude on Vertex AI
