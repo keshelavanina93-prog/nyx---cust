@@ -1,0 +1,106 @@
+{
+ "_note": "SYNTHETIC invoice fixture (mock AI input). Replace with anonymized real PDF/JPG from the pilot.",
+ "extraction": {
+  "supplier": {
+   "name": "SYNTHETIC TR Supplier Co",
+   "country": "TR",
+   "address": "Industrial zone 1",
+   "tax_id": null,
+   "confidence": 0.9
+  },
+  "buyer": {
+   "name": "Demo Importer LLC",
+   "tax_id": "400000000",
+   "confidence": 0.9
+  },
+  "invoice_number": "INV-TR-TEXTI-001",
+  "invoice_date": "2026-09-30",
+  "currency": "USD",
+  "incoterm": "FOB",
+  "incoterm_place": "Port",
+  "lines": [
+   {
+    "line_no": 1,
+    "description_raw": "Cotton table linen printed 100% cotton",
+    "description_normalized_ka": "სუფრის თეთრეული ბამბის ნაბეჭდი",
+    "sku": "SKU-6302-1",
+    "quantity": "200",
+    "unit": "pcs",
+    "unit_price": "113.82",
+    "line_total": "22764.00",
+    "origin_country": "TR",
+    "net_weight_kg": "160.000",
+    "gross_weight_kg": "169.600",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.35,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 2,
+    "description_raw": "PVC floor covering rolls",
+    "description_normalized_ka": "იატაკის საფარი PVC-სგან",
+    "sku": "SKU-3918-2",
+    "quantity": "300",
+    "unit": "m2",
+    "unit_price": "78.64",
+    "line_total": "23592.00",
+    "origin_country": "TR",
+    "net_weight_kg": "450.000",
+    "gross_weight_kg": "477.000",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.4,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 3,
+    "description_raw": "Terry towels cotton 70x140",
+    "description_normalized_ka": "პირსახოცები ხაოიანი ბამბის",
+    "sku": "SKU-6302-3",
+    "quantity": "50",
+    "unit": "pcs",
+    "unit_price": "98.82",
+    "line_total": "4941.00",
+    "origin_country": "TR",
+    "net_weight_kg": "25.000",
+    "gross_weight_kg": "26.500",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.45,
+     "w": 0.9,
+     "h": 0.04
+    }
+   }
+  ],
+  "invoice_total": "51297.00",
+  "freight_amount": "450.00",
+  "insurance_amount": null,
+  "gross_weight_kg": "673.100",
+  "net_weight_kg": "635.000",
+  "packages": 15,
+  "origin_country": "TR",
+  "language": "en",
+  "warnings": [
+   "SYNTHETIC"
+  ],
+  "field_confidence": {
+   "currency": 0.95,
+   "incoterm": 0.85,
+   "invoice_total": 0.95,
+   "invoice_number": 0.9,
+   "invoice_date": 0.9,
+   "supplier_name": 0.9
+  }
+ }
+}

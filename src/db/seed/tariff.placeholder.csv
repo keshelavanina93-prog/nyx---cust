@@ -1,0 +1,55 @@
+hs_code,description_ka,description_en,duty_rate,duty_specific,excise_rate,excise_specific,vat_exempt,unit,requires_docs,chapter_notes,heading_notes
+# PLACEHOLDER — NOT REAL TARIFF DATA. Rates and descriptions are illustrative only. Replace via /admin/tariff/import with the official Georgian tariff CSV.
+0702000000,[PLACEHOLDER] პომიდორი ახალი ან გაციებული,[PLACEHOLDER] Tomatoes fresh or chilled,12,,,,false,kg,"[""phyto""]",[PLACEHOLDER] თავი 07 — ბოსტნეული,[PLACEHOLDER] 0702 პომიდორი
+0805100000,[PLACEHOLDER] ფორთოხალი ახალი,[PLACEHOLDER] Oranges fresh,0,,,,false,kg,"[""phyto""]",[PLACEHOLDER] თავი 08 — ხილი,[PLACEHOLDER] 0805 ციტრუსი
+0901210000,[PLACEHOLDER] ყავა მოხალული კოფეინით,[PLACEHOLDER] Coffee roasted not decaffeinated,0,,,,false,kg,[],[PLACEHOLDER] თავი 09 — ყავა ჩაი,[PLACEHOLDER] 0901 ყავა
+0902300000,[PLACEHOLDER] შავი ჩაი ≤3 კგ შეფუთვით,[PLACEHOLDER] Black tea in packings ≤3 kg,12,,,,false,kg,[],[PLACEHOLDER] თავი 09,[PLACEHOLDER] 0902 ჩაი
+1006300000,[PLACEHOLDER] ბრინჯი ნახევრად ან მთლიანად დაფქული,[PLACEHOLDER] Rice semi-milled or wholly milled,0,,,,false,kg,[],[PLACEHOLDER] თავი 10 — მარცვლეული,[PLACEHOLDER] 1006 ბრინჯი
+1509100000,[PLACEHOLDER] ზეითუნის ზეთი ხელუხლებელი,[PLACEHOLDER] Olive oil virgin,0,,,,false,l,[],[PLACEHOLDER] თავი 15 — ცხიმები,[PLACEHOLDER] 1509 ზეითუნის ზეთი
+1704900000,[PLACEHOLDER] შაქრის საკონდიტრო ნაწარმი კაკაოს გარეშე,[PLACEHOLDER] Sugar confectionery without cocoa,12,,,,false,kg,[],[PLACEHOLDER] თავი 17,[PLACEHOLDER] 1704 საკონდიტრო
+1806320000,[PLACEHOLDER] შოკოლადი ფილებად შეუვსებელი,[PLACEHOLDER] Chocolate in blocks not filled,12,,,,false,kg,[],[PLACEHOLDER] თავი 18 — კაკაო,[PLACEHOLDER] 1806 შოკოლადი
+2202100000,[PLACEHOLDER] წყალი დამატკბობლით არაალკოჰოლური,[PLACEHOLDER] Waters with added sugar non-alcoholic,12,,,,false,l,[],[PLACEHOLDER] თავი 22 — სასმელები,[PLACEHOLDER] 2202 უალკოჰოლო
+2204210000,[PLACEHOLDER] ღვინო ≤2 ლ ჭურჭელში,[PLACEHOLDER] Wine in containers ≤2 l,12,,,"{""amount_gel"":""2.00"",""per"":""litre""}",false,l,[],[PLACEHOLDER] თავი 22,[PLACEHOLDER] 2204 ღვინო — აქციზი სპეციფიკური
+2402200000,[PLACEHOLDER] სიგარეტი თამბაქოთი,[PLACEHOLDER] Cigarettes containing tobacco,12,,,"{""amount_gel"":""1.70"",""per"":""unit""}",false,pcs,"[""license""]",[PLACEHOLDER] თავი 24 — თამბაქო,[PLACEHOLDER] 2402 სიგარეტი — აქციზი
+3004900000,[PLACEHOLDER] მედიკამენტები დოზირებული სხვა,[PLACEHOLDER] Medicaments in measured doses other,0,,,,true,kg,"[""license""]",[PLACEHOLDER] თავი 30 — ფარმაცია,[PLACEHOLDER] 3004 მედიკამენტები — დღგ გათავისუფლება
+3304990000,[PLACEHOLDER] კოსმეტიკური საშუალებები სხვა,[PLACEHOLDER] Beauty or make-up preparations other,0,,,,false,kg,[],[PLACEHOLDER] თავი 33 — კოსმეტიკა,[PLACEHOLDER] 3304 კოსმეტიკა
+3401110000,[PLACEHOLDER] საპონი ტუალეტის,[PLACEHOLDER] Soap for toilet use,0,,,,false,kg,[],[PLACEHOLDER] თავი 34,[PLACEHOLDER] 3401 საპონი
+3918100000,[PLACEHOLDER] იატაკის საფარი PVC-სგან,[PLACEHOLDER] Floor coverings of polymers of vinyl chloride PVC,0,,,,false,m2,[],[PLACEHOLDER] თავი 39 — პლასტმასა,[PLACEHOLDER] 3918 იატაკის საფარი პლასტმასის
+3923210000,[PLACEHOLDER] ტომრები და პაკეტები პოლიეთილენის,[PLACEHOLDER] Sacks and bags of polymers of ethylene,0,,,,false,kg,[],[PLACEHOLDER] თავი 39,[PLACEHOLDER] 3923 პლასტმასის ტარა
+3926909000,[PLACEHOLDER] პლასტმასის სხვა ნაკეთობები,[PLACEHOLDER] Other articles of plastics,0,,,,false,kg,[],[PLACEHOLDER] თავი 39,[PLACEHOLDER] 3926 სხვა პლასტმასის ნაკეთობა
+4011100000,[PLACEHOLDER] საბურავები ახალი მსუბუქი ავტომობილების,[PLACEHOLDER] New pneumatic tyres for motor cars,0,,,,false,pcs,[],[PLACEHOLDER] თავი 40 — რეზინი,[PLACEHOLDER] 4011 საბურავები
+4202220000,[PLACEHOLDER] ჩანთები ხელის პლასტმასის ან ტექსტილის ზედაპირით,[PLACEHOLDER] Handbags with outer surface of plastic sheeting or textile,12,,,,false,pcs,[],[PLACEHOLDER] თავი 42 — ტყავის ნაწარმი,[PLACEHOLDER] 4202 ჩანთები
+4418100000,[PLACEHOLDER] ფანჯრები და მათი ჩარჩოები ხის,[PLACEHOLDER] Windows and their frames of wood,12,,,,false,pcs,[],[PLACEHOLDER] თავი 44 — ხე,[PLACEHOLDER] 4418 ხის სამშენებლო ნაკეთობა
+4818100000,[PLACEHOLDER] ტუალეტის ქაღალდი,[PLACEHOLDER] Toilet paper,12,,,,false,kg,[],[PLACEHOLDER] თავი 48 — ქაღალდი,[PLACEHOLDER] 4818 ჰიგიენური ქაღალდი
+4901990000,[PLACEHOLDER] წიგნები ბროშურები სხვა,[PLACEHOLDER] Printed books other,0,,,,false,kg,[],[PLACEHOLDER] თავი 49 — ბეჭდვითი,[PLACEHOLDER] 4901 წიგნები
+5208520000,[PLACEHOLDER] ბამბის ქსოვილი ნაბეჭდი უხეში ≥85%,[PLACEHOLDER] Woven cotton fabrics printed plain weave >100 g/m2,0,,,,false,m2,[],[PLACEHOLDER] თავი 52 — ბამბა,[PLACEHOLDER] 5208 ბამბის ქსოვილი
+6104620000,[PLACEHOLDER] ქალის შარვალი ნაქსოვი ბამბის,[PLACEHOLDER] Women's trousers knitted of cotton,12,,,,false,pcs,[],[PLACEHOLDER] თავი 61 — ნაქსოვი ტანსაცმელი,[PLACEHOLDER] 6104 ქალის კოსტიუმები შარვლები
+6109100000,[PLACEHOLDER] მაისურები ნაქსოვი ბამბის,[PLACEHOLDER] T-shirts knitted of cotton,12,,,,false,pcs,[],[PLACEHOLDER] თავი 61,[PLACEHOLDER] 6109 მაისურები
+6110200000,[PLACEHOLDER] სვიტერები პულოვერები ბამბის,[PLACEHOLDER] Jerseys pullovers of cotton,12,,,,false,pcs,[],[PLACEHOLDER] თავი 61,[PLACEHOLDER] 6110 სვიტერები
+6203420000,[PLACEHOLDER] მამაკაცის შარვალი ბამბის არანაქსოვი,[PLACEHOLDER] Men's trousers of cotton not knitted,12,,,,false,pcs,[],[PLACEHOLDER] თავი 62 — ტანსაცმელი,[PLACEHOLDER] 6203 მამაკაცის შარვლები
+6204620000,[PLACEHOLDER] ქალის შარვალი ბამბის არანაქსოვი,[PLACEHOLDER] Women's trousers of cotton not knitted,12,,,,false,pcs,[],[PLACEHOLDER] თავი 62,[PLACEHOLDER] 6204 ქალის შარვლები
+6302210000,[PLACEHOLDER] საწოლის თეთრეული ბამბის ნაბეჭდი,[PLACEHOLDER] Bed linen printed of cotton,12,,,,false,kg,[],[PLACEHOLDER] თავი 63 — ტექსტილის ნაწარმი,[PLACEHOLDER] 6302 საწოლის სუფრის თეთრეული
+6302510000,[PLACEHOLDER] სუფრის თეთრეული ბამბის,[PLACEHOLDER] Table linen of cotton,12,,,,false,kg,[],[PLACEHOLDER] თავი 63,[PLACEHOLDER] 6302 სუფრის თეთრეული — საბაჟო ღირებულების რისკის მაგალითი
+6302600000,[PLACEHOLDER] ტუალეტის და სამზარეულოს თეთრეული ბამბის ხაოიანი,[PLACEHOLDER] Toilet and kitchen linen of terry cotton,12,,,,false,kg,[],[PLACEHOLDER] თავი 63,[PLACEHOLDER] 6302 პირსახოცები
+6403990000,[PLACEHOLDER] ფეხსაცმელი ტყავის ზედაპირით სხვა,[PLACEHOLDER] Footwear with leather uppers other,12,,,,false,pairs,[],[PLACEHOLDER] თავი 64 — ფეხსაცმელი,[PLACEHOLDER] 6403 ტყავის ფეხსაცმელი
+6404110000,[PLACEHOLDER] სპორტული ფეხსაცმელი ტექსტილის ზედაპირით,[PLACEHOLDER] Sports footwear with textile uppers,12,,,,false,pairs,[],[PLACEHOLDER] თავი 64,[PLACEHOLDER] 6404 ტექსტილის ფეხსაცმელი
+6910100000,[PLACEHOLDER] ნიჟარები უნიტაზები ფაიფურის,[PLACEHOLDER] Ceramic sinks and toilets of porcelain,12,,,,false,pcs,[],[PLACEHOLDER] თავი 69 — კერამიკა,[PLACEHOLDER] 6910 სანტექნიკა
+7013370000,[PLACEHOLDER] სასმელი ჭიქები მინის სხვა,[PLACEHOLDER] Drinking glasses other,12,,,,false,pcs,[],[PLACEHOLDER] თავი 70 — მინა,[PLACEHOLDER] 7013 მინის ჭურჭელი
+7210490000,[PLACEHOLDER] ფოლადის ბრტყელი ნაგლინი მოთუთიებული,[PLACEHOLDER] Flat-rolled steel zinc plated other,0,,,,false,kg,[],[PLACEHOLDER] თავი 72 — ფოლადი,[PLACEHOLDER] 7210 მოთუთიებული ფურცელი
+7308900000,[PLACEHOLDER] ლითონკონსტრუქციები ფოლადის სხვა,[PLACEHOLDER] Structures of iron or steel other,0,,,,false,kg,[],[PLACEHOLDER] თავი 73,[PLACEHOLDER] 7308 ლითონკონსტრუქციები
+7323930000,[PLACEHOLDER] სამზარეულოს ნაწარმი უჟანგავი ფოლადის,[PLACEHOLDER] Table kitchen articles of stainless steel,12,,,,false,kg,[],[PLACEHOLDER] თავი 73,[PLACEHOLDER] 7323 სამზარეულოს ჭურჭელი
+8413700000,[PLACEHOLDER] ტუმბოები ცენტრიდანული,[PLACEHOLDER] Centrifugal pumps,0,,,,false,pcs,[],[PLACEHOLDER] თავი 84 — მანქანები,[PLACEHOLDER] 8413 ტუმბოები
+8415100000,[PLACEHOLDER] კონდიციონერები კედლის/ფანჯრის,[PLACEHOLDER] Air conditioners window or wall types,0,,,,false,pcs,[],[PLACEHOLDER] თავი 84,[PLACEHOLDER] 8415 კონდიციონერები
+8418100000,[PLACEHOLDER] მაცივრები საყინულით კომბინირებული,[PLACEHOLDER] Combined refrigerator-freezers,0,,,,false,pcs,[],[PLACEHOLDER] თავი 84,[PLACEHOLDER] 8418 მაცივრები
+8450110000,[PLACEHOLDER] სარეცხი მანქანები ავტომატური ≤10 კგ,[PLACEHOLDER] Fully-automatic washing machines ≤10 kg,0,,,,false,pcs,[],[PLACEHOLDER] თავი 84,[PLACEHOLDER] 8450 სარეცხი მანქანები
+8471300000,[PLACEHOLDER] პორტატული კომპიუტერები ≤10 კგ,[PLACEHOLDER] Portable computers ≤10 kg laptops,0,,,,false,pcs,[],[PLACEHOLDER] თავი 84,[PLACEHOLDER] 8471 კომპიუტერები
+8504400000,[PLACEHOLDER] სტატიკური გარდამქმნელები დამტენები,[PLACEHOLDER] Static converters chargers adapters,0,,,,false,pcs,[],[PLACEHOLDER] თავი 85 — ელექტრო,[PLACEHOLDER] 8504 ტრანსფორმატორები
+8516600000,[PLACEHOLDER] ელექტრო ღუმელები ქურები,[PLACEHOLDER] Electric ovens cookers,0,,,,false,pcs,[],[PLACEHOLDER] თავი 85,[PLACEHOLDER] 8516 საყოფაცხოვრებო ელექტრო
+8517130000,[PLACEHOLDER] სმარტფონები,[PLACEHOLDER] Smartphones,0,,,,false,pcs,[],[PLACEHOLDER] თავი 85,[PLACEHOLDER] 8517 ტელეფონები
+8528720000,[PLACEHOLDER] ტელევიზორები ფერადი,[PLACEHOLDER] Television receivers colour,0,,,,false,pcs,[],[PLACEHOLDER] თავი 85,[PLACEHOLDER] 8528 მონიტორები ტელევიზორები
+8544420000,[PLACEHOLDER] ელექტრო კაბელები შემაერთებლებით ≤1000 ვ,[PLACEHOLDER] Electric conductors fitted with connectors ≤1000 V,0,,,,false,kg,[],[PLACEHOLDER] თავი 85,[PLACEHOLDER] 8544 კაბელები
+8708990000,[PLACEHOLDER] ავტომობილის ნაწილები სხვა,[PLACEHOLDER] Parts of motor vehicles other,0,,,,false,kg,[],[PLACEHOLDER] თავი 87 — ტრანსპორტი,[PLACEHOLDER] 8708 ავტონაწილები
+9401610000,[PLACEHOLDER] სავარძლები ხის კარკასით რბილი,[PLACEHOLDER] Upholstered seats with wooden frames,12,,,,false,pcs,[],[PLACEHOLDER] თავი 94 — ავეჯი,[PLACEHOLDER] 9401 სავარძლები
+9403600000,[PLACEHOLDER] ხის ავეჯი სხვა,[PLACEHOLDER] Wooden furniture other,12,,,,false,pcs,[],[PLACEHOLDER] თავი 94,[PLACEHOLDER] 9403 ავეჯი
+9503009000,[PLACEHOLDER] სათამაშოები სხვა,[PLACEHOLDER] Toys other,0,,,,false,pcs,[],[PLACEHOLDER] თავი 95 — სათამაშოები,[PLACEHOLDER] 9503 სათამაშოები
+9603210000,[PLACEHOLDER] კბილის ჯაგრისები,[PLACEHOLDER] Tooth brushes,12,,,,false,pcs,[],[PLACEHOLDER] თავი 96,[PLACEHOLDER] 9603 ჯაგრისები

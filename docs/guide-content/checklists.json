@@ -1,0 +1,61 @@
+{
+  "_note": "[ASSUMPTION] Checklist contents are product assumptions (brief §5.8, §5.5a). Edit here without code changes.",
+  "documents": [
+    { "key": "invoice", "label_ka": "კომერციული ინვოისი", "required": true },
+    { "key": "transport", "label_ka": "ტრანსპორტის დოკუმენტი (CMR / კონოსამენტი / AWB)", "required": true },
+    { "key": "packing_list", "label_ka": "შეფუთვის სია", "required": true },
+    { "key": "origin_cert", "label_ka": "წარმოშობის სერტიფიკატი (EUR.1 / CT-1 / Form A), თუ შეღავათს ითხოვ", "required": false },
+    { "key": "phyto_vet", "label_ka": "ფიტო / ვეტ სერტიფიკატი, თუ HS მოითხოვს", "required": false },
+    { "key": "license", "label_ka": "ლიცენზია / ნებართვა, თუ HS მოითხოვს", "required": false },
+    { "key": "contract", "label_ka": "მომწოდებელთან ხელშეკრულება", "required": false }
+  ],
+  "ecustoms_access": [
+    { "key": "worth", "label_ka": "გავიანგარიშე, ღირს თუ არა დაშვება (≈4–5+ დეკლ./წელი)", "required": true },
+    { "key": "register", "label_ka": "დასაქმებული რეგისტრირებულია დასაქმებულ პირთა რეესტრში", "required": true, "hint_ka": "[VERIFIED პირობა, rs.ge p=84]" },
+    { "key": "debt", "label_ka": "საფასურის ბარათზე დავალიანება არ მაქვს", "required": true, "hint_ka": "[VERIFIED პირობა, rs.ge p=84]" },
+    { "key": "offices", "label_ka": "საბაჟო ორგანოს კოდები ავირჩიე", "required": true },
+    { "key": "applied", "label_ka": "განაცხადი გავაგზავნე rs.ge-ს ავტორიზებული გვერდიდან", "required": true },
+    { "key": "paid", "label_ka": "დაშვების საფასური გადავიხადე (200/300/500 ₾)", "required": true, "hint_ka": "[VERIFIED, №96 გრ. 46]" },
+    { "key": "active", "label_ka": "პასუხი მივიღე (მოდული + SMS) და ვადა ჩავწერე", "required": true },
+    { "key": "empty_sad", "label_ka": "ცარიელი SAD → Export XML ავტვირთე", "required": false }
+  ],
+  "ecustoms_import": [
+    { "key": "login", "label_ka": "შევედი eCustoms-ში (ASYCUDA World) საკუთარი დაშვებით", "required": true },
+    { "key": "new_sad", "label_ka": "ახალი SAD (Detailed Declaration) გავხსენი", "required": true },
+    { "key": "import_xml", "label_ka": "„Import XML File“ ღილაკით ჩავტვირთე XML (ან ველ-ველ ფურცლით შევავსე)", "required": true, "hint_ka": "[UNVERIFIED] ქართულ კლიენტში ფუნქციის ჩართულობა" },
+    { "key": "verify_fields", "label_ka": "ყველა ველი შევადარე ველ-ველ ფურცელს", "required": true },
+    { "key": "attach_docs", "label_ka": "დოკუმენტები ავტვირთე / მივაბი", "required": true },
+    { "key": "register", "label_ka": "დეკლარაცია დავარეგისტრირე (კურსი ფიქსირდება ამ დღით)", "required": true },
+    { "key": "assessment", "label_ka": "შეფასების ნომერი (A …) ჩავწერე", "required": true }
+  ],
+  "payment": [
+    { "key": "amount", "label_ka": "თანხა შევადარე შეფასებას (ბაჟი + აქციზი + დღგ + საფასური)", "required": true },
+    { "key": "deposit", "label_ka": "RS-ის ერთიან ანგარიშზე / დეპოზიტზე გადავიხადე", "required": true },
+    { "key": "confirmed", "label_ka": "გადახდა eCustoms-ში აისახა", "required": true }
+  ],
+  "yellow_corridor": [
+    { "key": "notice", "label_ka": "შეტყობინება ავტორიზებულ გვერდზე წავიკითხე", "required": true },
+    { "key": "invoice", "label_ka": "ინვოისი", "required": true },
+    { "key": "transport", "label_ka": "ტრანსპორტის დოკუმენტი", "required": true },
+    { "key": "packing", "label_ka": "შეფუთვის სია", "required": true },
+    { "key": "certs", "label_ka": "სერტიფიკატები (წარმოშობა / ფიტო / ვეტ)", "required": false },
+    { "key": "calc", "label_ka": "გამოთვლის ფურცელი", "required": true },
+    { "key": "submit", "label_ka": "დოკუმენტები წარვადგინე", "required": true }
+  ],
+  "red_corridor_physical": [
+    { "key": "notice", "label_ka": "შეტყობინება ავტორიზებულ გვერდზე წავიკითხე", "required": true },
+    { "key": "qty", "label_ka": "რაოდენობა ინვოისს / შეფუთვის სიას ემთხვევა", "required": true },
+    { "key": "packaging", "label_ka": "ადგილების რაოდენობა და მარკირება ემთხვევა", "required": true },
+    { "key": "weights", "label_ka": "ბრუტო / ნეტო წონა ემთხვევა", "required": true },
+    { "key": "present", "label_ka": "დათვალიერებაზე წარმომადგენელი მყავს", "required": false }
+  ],
+  "red_corridor_value": [
+    { "key": "contract", "label_ka": "მომწოდებლის ხელშეკრულება", "required": true },
+    { "key": "bank", "label_ka": "საბანკო გადახდის დამადასტურებელი", "required": true },
+    { "key": "pricelist", "label_ka": "პრაისი / ფასების სია", "required": true },
+    { "key": "correspondence", "label_ka": "მიმოწერა ფასზე", "required": false },
+    { "key": "transport_invoice", "label_ka": "ტრანსპორტისა და დაზღვევის ინვოისები", "required": true },
+    { "key": "history", "label_ka": "წინა ტვირთების ისტორია იმავე ფასით", "required": false },
+    { "key": "rs_adjustment", "label_ka": "RS-ის კორექციის შემთხვევაში ახალი ღირებულება ჩავწერე", "required": false }
+  ]
+}

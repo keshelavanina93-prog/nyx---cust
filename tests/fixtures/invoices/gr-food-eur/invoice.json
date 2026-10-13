@@ -1,0 +1,85 @@
+{
+ "_note": "SYNTHETIC invoice fixture (mock AI input). Replace with anonymized real PDF/JPG from the pilot.",
+ "extraction": {
+  "supplier": {
+   "name": "SYNTHETIC GR Supplier Co",
+   "country": "GR",
+   "address": "Industrial zone 1",
+   "tax_id": null,
+   "confidence": 0.9
+  },
+  "buyer": {
+   "name": "Demo Importer LLC",
+   "tax_id": "400000000",
+   "confidence": 0.9
+  },
+  "invoice_number": "INV-GR-FOOD--001",
+  "invoice_date": "2026-09-30",
+  "currency": "EUR",
+  "incoterm": "CFR",
+  "incoterm_place": "Port",
+  "lines": [
+   {
+    "line_no": 1,
+    "description_raw": "Olive oil virgin 1L",
+    "description_normalized_ka": "ზეითუნის ზეთი",
+    "sku": "SKU-1509-1",
+    "quantity": "600",
+    "unit": "l",
+    "unit_price": "22.92",
+    "line_total": "13752.00",
+    "origin_country": "GR",
+    "net_weight_kg": "570.000",
+    "gross_weight_kg": "604.200",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.35,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 2,
+    "description_raw": "Roasted coffee beans",
+    "description_normalized_ka": "ყავა მოხალული",
+    "sku": "SKU-0901-2",
+    "quantity": "400",
+    "unit": "kg",
+    "unit_price": "69.19",
+    "line_total": "27676.00",
+    "origin_country": "GR",
+    "net_weight_kg": "400.000",
+    "gross_weight_kg": "424.000",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.4,
+     "w": 0.9,
+     "h": 0.04
+    }
+   }
+  ],
+  "invoice_total": "41428.00",
+  "freight_amount": null,
+  "insurance_amount": null,
+  "gross_weight_kg": "1028.200",
+  "net_weight_kg": "970.000",
+  "packages": 10,
+  "origin_country": "GR",
+  "language": "en",
+  "warnings": [
+   "SYNTHETIC"
+  ],
+  "field_confidence": {
+   "currency": 0.95,
+   "incoterm": 0.85,
+   "invoice_total": 0.95,
+   "invoice_number": 0.9,
+   "invoice_date": 0.9,
+   "supplier_name": 0.9
+  }
+ }
+}

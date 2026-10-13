@@ -1,0 +1,85 @@
+{
+ "_note": "SYNTHETIC invoice fixture (mock AI input). Replace with anonymized real PDF/JPG from the pilot.",
+ "extraction": {
+  "supplier": {
+   "name": "SYNTHETIC CN Supplier Co",
+   "country": "CN",
+   "address": "Industrial zone 1",
+   "tax_id": null,
+   "confidence": 0.9
+  },
+  "buyer": {
+   "name": "Demo Importer LLC",
+   "tax_id": "400000000",
+   "confidence": 0.9
+  },
+  "invoice_number": "INV-CN-SHOES-001",
+  "invoice_date": "2026-09-30",
+  "currency": "USD",
+  "incoterm": "CIF",
+  "incoterm_place": "Port",
+  "lines": [
+   {
+    "line_no": 1,
+    "description_raw": "Sports shoes textile upper",
+    "description_normalized_ka": "სპორტული ფეხსაცმელი ტექსტილის ზედაპირით",
+    "sku": "SKU-6404-1",
+    "quantity": "300",
+    "unit": "pairs",
+    "unit_price": "8.50",
+    "line_total": "2550.00",
+    "origin_country": "CN",
+    "net_weight_kg": "180.000",
+    "gross_weight_kg": "190.800",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.35,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 2,
+    "description_raw": "Leather shoes",
+    "description_normalized_ka": "ფეხსაცმელი ტყავის ზედაპირით",
+    "sku": "SKU-6403-2",
+    "quantity": "400",
+    "unit": "pairs",
+    "unit_price": "16.17",
+    "line_total": "6468.00",
+    "origin_country": "CN",
+    "net_weight_kg": "320.000",
+    "gross_weight_kg": "339.200",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.4,
+     "w": 0.9,
+     "h": 0.04
+    }
+   }
+  ],
+  "invoice_total": "9018.00",
+  "freight_amount": null,
+  "insurance_amount": null,
+  "gross_weight_kg": "530.000",
+  "net_weight_kg": "500.000",
+  "packages": 10,
+  "origin_country": "CN",
+  "language": "zh",
+  "warnings": [
+   "SYNTHETIC"
+  ],
+  "field_confidence": {
+   "currency": 0.95,
+   "incoterm": 0.85,
+   "invoice_total": 0.95,
+   "invoice_number": 0.9,
+   "invoice_date": 0.9,
+   "supplier_name": 0.9
+  }
+ }
+}

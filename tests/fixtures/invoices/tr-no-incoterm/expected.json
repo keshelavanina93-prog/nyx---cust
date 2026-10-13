@@ -1,0 +1,20 @@
+{
+ "_note": "SYNTHETIC ground truth. HS codes refer to the PLACEHOLDER tariff.",
+ "tags": [],
+ "extraction": {
+  "currency": "USD",
+  "incoterm": null,
+  "invoice_total": "6420.00",
+  "lines": [
+   {
+    "line_no": 1,
+    "line_total": "6420.00",
+    "quantity": "600",
+    "unit_price": "10.70"
+   }
+  ]
+ },
+ "hs": {
+  "1": "3918100000"
+ }
+}

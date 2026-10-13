@@ -1,0 +1,127 @@
+{
+ "_note": "SYNTHETIC invoice fixture (mock AI input). Replace with anonymized real PDF/JPG from the pilot.",
+ "extraction": {
+  "supplier": {
+   "name": "SYNTHETIC TR Supplier Co",
+   "country": "TR",
+   "address": "Industrial zone 1",
+   "tax_id": null,
+   "confidence": 0.9
+  },
+  "buyer": {
+   "name": "Demo Importer LLC",
+   "tax_id": "400000000",
+   "confidence": 0.9
+  },
+  "invoice_number": "INV-TR-TOYS--001",
+  "invoice_date": "2026-09-30",
+  "currency": "USD",
+  "incoterm": "FOB",
+  "incoterm_place": "Port",
+  "lines": [
+   {
+    "line_no": 1,
+    "description_raw": "Toys plastic",
+    "description_normalized_ka": "სათამაშოები",
+    "sku": "SKU-9503-1",
+    "quantity": "50",
+    "unit": "pcs",
+    "unit_price": "67.46",
+    "line_total": "3373.00",
+    "origin_country": "TR",
+    "net_weight_kg": "15.000",
+    "gross_weight_kg": "15.900",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.35,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 2,
+    "description_raw": "Cotton table linen printed 100% cotton",
+    "description_normalized_ka": "სუფრის თეთრეული ბამბის ნაბეჭდი",
+    "sku": "SKU-6302-2",
+    "quantity": "100",
+    "unit": "pcs",
+    "unit_price": "35.82",
+    "line_total": "3582.00",
+    "origin_country": "TR",
+    "net_weight_kg": "80.000",
+    "gross_weight_kg": "84.800",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.4,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 3,
+    "description_raw": "Women's cotton t-shirts knitted",
+    "description_normalized_ka": "მაისურები ნაქსოვი ბამბის",
+    "sku": "SKU-6109-3",
+    "quantity": "100",
+    "unit": "pcs",
+    "unit_price": "65.57",
+    "line_total": "6557.00",
+    "origin_country": "TR",
+    "net_weight_kg": "20.000",
+    "gross_weight_kg": "21.200",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.45,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 4,
+    "description_raw": "USB chargers adapters",
+    "description_normalized_ka": "დამტენები ადაპტერები",
+    "sku": "SKU-8504-4",
+    "quantity": "400",
+    "unit": "pcs",
+    "unit_price": "38.06",
+    "line_total": "15224.00",
+    "origin_country": "TR",
+    "net_weight_kg": "40.000",
+    "gross_weight_kg": "42.400",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.5,
+     "w": 0.9,
+     "h": 0.04
+    }
+   }
+  ],
+  "invoice_total": "28736.00",
+  "freight_amount": "450.00",
+  "insurance_amount": null,
+  "gross_weight_kg": "164.300",
+  "net_weight_kg": "155.000",
+  "packages": 20,
+  "origin_country": "TR",
+  "language": "tr",
+  "warnings": [
+   "SYNTHETIC"
+  ],
+  "field_confidence": {
+   "currency": 0.95,
+   "incoterm": 0.85,
+   "invoice_total": 0.95,
+   "invoice_number": 0.9,
+   "invoice_date": 0.9,
+   "supplier_name": 0.9
+  }
+ }
+}

@@ -1,0 +1,253 @@
+{
+ "_note": "SYNTHETIC invoice fixture (mock AI input). Replace with anonymized real PDF/JPG from the pilot.",
+ "extraction": {
+  "supplier": {
+   "name": "SYNTHETIC CN Supplier Co",
+   "country": "CN",
+   "address": "Industrial zone 1",
+   "tax_id": null,
+   "confidence": 0.9
+  },
+  "buyer": {
+   "name": "Demo Importer LLC",
+   "tax_id": "400000000",
+   "confidence": 0.9
+  },
+  "invoice_number": "INV-CN-MULTI-001",
+  "invoice_date": "2026-09-30",
+  "currency": "USD",
+  "incoterm": "FOB",
+  "incoterm_place": "Port",
+  "lines": [
+   {
+    "line_no": 1,
+    "description_raw": "Laptop computers 15 inch",
+    "description_normalized_ka": "პორტატული კომპიუტერები",
+    "sku": "SKU-8471-1",
+    "quantity": "100",
+    "unit": "pcs",
+    "unit_price": "95.63",
+    "line_total": "9563.00",
+    "origin_country": "CN",
+    "net_weight_kg": "210.000",
+    "gross_weight_kg": "222.600",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.35,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 2,
+    "description_raw": "Smartphones",
+    "description_normalized_ka": "სმარტფონები",
+    "sku": "SKU-8517-2",
+    "quantity": "600",
+    "unit": "pcs",
+    "unit_price": "93.91",
+    "line_total": "56346.00",
+    "origin_country": "CN",
+    "net_weight_kg": "150.000",
+    "gross_weight_kg": "159.000",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.4,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 3,
+    "description_raw": "USB chargers adapters",
+    "description_normalized_ka": "დამტენები ადაპტერები",
+    "sku": "SKU-8504-3",
+    "quantity": "50",
+    "unit": "pcs",
+    "unit_price": "69.57",
+    "line_total": "3478.50",
+    "origin_country": "CN",
+    "net_weight_kg": "5.000",
+    "gross_weight_kg": "5.300",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.45,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 4,
+    "description_raw": "Women's cotton t-shirts knitted",
+    "description_normalized_ka": "მაისურები ნაქსოვი ბამბის",
+    "sku": "SKU-6109-4",
+    "quantity": "400",
+    "unit": "pcs",
+    "unit_price": "60.17",
+    "line_total": "24068.00",
+    "origin_country": "CN",
+    "net_weight_kg": "80.000",
+    "gross_weight_kg": "84.800",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.5,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 5,
+    "description_raw": "Toys plastic",
+    "description_normalized_ka": "სათამაშოები",
+    "sku": "SKU-9503-5",
+    "quantity": "200",
+    "unit": "pcs",
+    "unit_price": "87.94",
+    "line_total": "17588.00",
+    "origin_country": "CN",
+    "net_weight_kg": "60.000",
+    "gross_weight_kg": "63.600",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 2,
+     "x": 0.05,
+     "y": 0.55,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 6,
+    "description_raw": "Plastic bags polyethylene",
+    "description_normalized_ka": "ტომრები პოლიეთილენის",
+    "sku": "SKU-3923-6",
+    "quantity": "200",
+    "unit": "kg",
+    "unit_price": "73.66",
+    "line_total": "14732.00",
+    "origin_country": "CN",
+    "net_weight_kg": "200.000",
+    "gross_weight_kg": "212.000",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 2,
+     "x": 0.05,
+     "y": 0.6000000000000001,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 7,
+    "description_raw": "Stainless steel kitchenware",
+    "description_normalized_ka": "სამზარეულოს ნაწარმი უჟანგავი ფოლადის",
+    "sku": "SKU-7323-7",
+    "quantity": "50",
+    "unit": "pcs",
+    "unit_price": "15.49",
+    "line_total": "774.50",
+    "origin_country": "CN",
+    "net_weight_kg": "35.000",
+    "gross_weight_kg": "37.100",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 2,
+     "x": 0.05,
+     "y": 0.65,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 8,
+    "description_raw": "Wooden chairs upholstered",
+    "description_normalized_ka": "სავარძლები ხის კარკასით რბილი",
+    "sku": "SKU-9401-8",
+    "quantity": "300",
+    "unit": "pcs",
+    "unit_price": "21.05",
+    "line_total": "6315.00",
+    "origin_country": "CN",
+    "net_weight_kg": "2700.000",
+    "gross_weight_kg": "2862.000",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 2,
+     "x": 0.05,
+     "y": 0.7,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 9,
+    "description_raw": "Sports shoes textile upper",
+    "description_normalized_ka": "სპორტული ფეხსაცმელი ტექსტილის ზედაპირით",
+    "sku": "SKU-6404-9",
+    "quantity": "200",
+    "unit": "pairs",
+    "unit_price": "19.51",
+    "line_total": "3902.00",
+    "origin_country": "CN",
+    "net_weight_kg": "120.000",
+    "gross_weight_kg": "127.200",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 3,
+     "x": 0.05,
+     "y": 0.75,
+     "w": 0.9,
+     "h": 0.04
+    }
+   },
+   {
+    "line_no": 10,
+    "description_raw": "Cotton table linen printed 100% cotton",
+    "description_normalized_ka": "სუფრის თეთრეული ბამბის ნაბეჭდი",
+    "sku": "SKU-6302-10",
+    "quantity": "300",
+    "unit": "pcs",
+    "unit_price": "51.47",
+    "line_total": "15441.00",
+    "origin_country": "CN",
+    "net_weight_kg": "240.000",
+    "gross_weight_kg": "254.400",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 3,
+     "x": 0.05,
+     "y": 0.8,
+     "w": 0.9,
+     "h": 0.04
+    }
+   }
+  ],
+  "invoice_total": "152208.00",
+  "freight_amount": "450.00",
+  "insurance_amount": null,
+  "gross_weight_kg": "4028.000",
+  "net_weight_kg": "3800.000",
+  "packages": 50,
+  "origin_country": "CN",
+  "language": "en",
+  "warnings": [
+   "SYNTHETIC"
+  ],
+  "field_confidence": {
+   "currency": 0.95,
+   "incoterm": 0.85,
+   "invoice_total": 0.95,
+   "invoice_number": 0.9,
+   "invoice_date": 0.9,
+   "supplier_name": 0.9
+  }
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "_note": "SYNTHETIC ground truth. HS codes refer to the PLACEHOLDER tariff.",
+ "tags": [],
+ "extraction": {
+  "currency": "USD",
+  "incoterm": "FOB",
+  "invoice_total": "51297.00",
+  "lines": [
+   {
+    "line_no": 1,
+    "line_total": "22764.00",
+    "quantity": "200",
+    "unit_price": "113.82"
+   },
+   {
+    "line_no": 2,
+    "line_total": "23592.00",
+    "quantity": "300",
+    "unit_price": "78.64"
+   },
+   {
+    "line_no": 3,
+    "line_total": "4941.00",
+    "quantity": "50",
+    "unit_price": "98.82"
+   }
+  ]
+ },
+ "hs": {
+  "1": "6302510000",
+  "2": "3918100000",
+  "3": "6302600000"
+ }
+}

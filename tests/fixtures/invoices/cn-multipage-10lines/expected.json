@@ -1,0 +1,85 @@
+{
+ "_note": "SYNTHETIC ground truth. HS codes refer to the PLACEHOLDER tariff.",
+ "tags": [
+  "multipage"
+ ],
+ "extraction": {
+  "currency": "USD",
+  "incoterm": "FOB",
+  "invoice_total": "152208.00",
+  "lines": [
+   {
+    "line_no": 1,
+    "line_total": "9563.00",
+    "quantity": "100",
+    "unit_price": "95.63"
+   },
+   {
+    "line_no": 2,
+    "line_total": "56346.00",
+    "quantity": "600",
+    "unit_price": "93.91"
+   },
+   {
+    "line_no": 3,
+    "line_total": "3478.50",
+    "quantity": "50",
+    "unit_price": "69.57"
+   },
+   {
+    "line_no": 4,
+    "line_total": "24068.00",
+    "quantity": "400",
+    "unit_price": "60.17"
+   },
+   {
+    "line_no": 5,
+    "line_total": "17588.00",
+    "quantity": "200",
+    "unit_price": "87.94"
+   },
+   {
+    "line_no": 6,
+    "line_total": "14732.00",
+    "quantity": "200",
+    "unit_price": "73.66"
+   },
+   {
+    "line_no": 7,
+    "line_total": "774.50",
+    "quantity": "50",
+    "unit_price": "15.49"
+   },
+   {
+    "line_no": 8,
+    "line_total": "6315.00",
+    "quantity": "300",
+    "unit_price": "21.05"
+   },
+   {
+    "line_no": 9,
+    "line_total": "3902.00",
+    "quantity": "200",
+    "unit_price": "19.51"
+   },
+   {
+    "line_no": 10,
+    "line_total": "15441.00",
+    "quantity": "300",
+    "unit_price": "51.47"
+   }
+  ]
+ },
+ "hs": {
+  "1": "8471300000",
+  "2": "8517130000",
+  "3": "8504400000",
+  "4": "6109100000",
+  "5": "9503009000",
+  "6": "3923210000",
+  "7": "7323930000",
+  "8": "9401610000",
+  "9": "6404110000",
+  "10": "6302510000"
+ }
+}

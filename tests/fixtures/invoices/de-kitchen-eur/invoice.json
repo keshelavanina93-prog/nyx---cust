@@ -1,0 +1,64 @@
+{
+ "_note": "SYNTHETIC invoice fixture (mock AI input). Replace with anonymized real PDF/JPG from the pilot.",
+ "extraction": {
+  "supplier": {
+   "name": "SYNTHETIC DE Supplier Co",
+   "country": "DE",
+   "address": "Industrial zone 1",
+   "tax_id": null,
+   "confidence": 0.9
+  },
+  "buyer": {
+   "name": "Demo Importer LLC",
+   "tax_id": "400000000",
+   "confidence": 0.9
+  },
+  "invoice_number": "INV-DE-KITCH-001",
+  "invoice_date": "2026-09-30",
+  "currency": "EUR",
+  "incoterm": "DAP",
+  "incoterm_place": "Port",
+  "lines": [
+   {
+    "line_no": 1,
+    "description_raw": "Stainless steel kitchenware",
+    "description_normalized_ka": "სამზარეულოს ნაწარმი უჟანგავი ფოლადის",
+    "sku": "SKU-7323-1",
+    "quantity": "50",
+    "unit": "pcs",
+    "unit_price": "117.19",
+    "line_total": "5859.50",
+    "origin_country": "DE",
+    "net_weight_kg": "35.000",
+    "gross_weight_kg": "37.100",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.35,
+     "w": 0.9,
+     "h": 0.04
+    }
+   }
+  ],
+  "invoice_total": "5859.50",
+  "freight_amount": null,
+  "insurance_amount": null,
+  "gross_weight_kg": "37.100",
+  "net_weight_kg": "35.000",
+  "packages": 5,
+  "origin_country": "DE",
+  "language": "en",
+  "warnings": [
+   "SYNTHETIC"
+  ],
+  "field_confidence": {
+   "currency": 0.95,
+   "incoterm": 0.85,
+   "invoice_total": 0.95,
+   "invoice_number": 0.9,
+   "invoice_date": 0.9,
+   "supplier_name": 0.9
+  }
+ }
+}

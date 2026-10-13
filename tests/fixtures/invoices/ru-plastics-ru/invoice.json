@@ -1,0 +1,64 @@
+{
+ "_note": "SYNTHETIC invoice fixture (mock AI input). Replace with anonymized real PDF/JPG from the pilot.",
+ "extraction": {
+  "supplier": {
+   "name": "SYNTHETIC RU Supplier Co",
+   "country": "RU",
+   "address": "Industrial zone 1",
+   "tax_id": null,
+   "confidence": 0.9
+  },
+  "buyer": {
+   "name": "Demo Importer LLC",
+   "tax_id": "400000000",
+   "confidence": 0.9
+  },
+  "invoice_number": "INV-RU-PLAST-001",
+  "invoice_date": "2026-09-30",
+  "currency": "USD",
+  "incoterm": "CPT",
+  "incoterm_place": "Port",
+  "lines": [
+   {
+    "line_no": 1,
+    "description_raw": "Plastic bags polyethylene",
+    "description_normalized_ka": "ტომრები პოლიეთილენის",
+    "sku": "SKU-3923-1",
+    "quantity": "400",
+    "unit": "kg",
+    "unit_price": "70.89",
+    "line_total": "28356.00",
+    "origin_country": "RU",
+    "net_weight_kg": "400.000",
+    "gross_weight_kg": "424.000",
+    "confidence": 0.9,
+    "bbox": {
+     "page": 1,
+     "x": 0.05,
+     "y": 0.35,
+     "w": 0.9,
+     "h": 0.04
+    }
+   }
+  ],
+  "invoice_total": "28356.00",
+  "freight_amount": null,
+  "insurance_amount": null,
+  "gross_weight_kg": "424.000",
+  "net_weight_kg": "400.000",
+  "packages": 5,
+  "origin_country": "RU",
+  "language": "ru",
+  "warnings": [
+   "SYNTHETIC"
+  ],
+  "field_confidence": {
+   "currency": 0.95,
+   "incoterm": 0.85,
+   "invoice_total": 0.95,
+   "invoice_number": 0.9,
+   "invoice_date": 0.9,
+   "supplier_name": 0.9
+  }
+ }
+}
