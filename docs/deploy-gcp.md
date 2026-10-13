@@ -38,11 +38,22 @@ Live URL: https://customs-copilot-ge-265781216571.europe-west1.run.app
 curl -X POST https://<service-url>/api/admin/seed -d '' -H "Authorization: Bearer $(gcloud secrets versions access latest --secret CRON_SECRET --project $P)"
 ```
 
+## AI self-check (no login needed)
+```bash
+SEC=$(gcloud secrets versions access latest --secret CRON_SECRET --project $P); URL=https://customs-copilot-ge-265781216571.europe-west1.run.app
+curl -s $URL/api/admin/ai-check -H "Authorization: Bearer $SEC"                      # ping main + fast model
+curl -s -X POST $URL/api/admin/ai-check -H "Authorization: Bearer $SEC" -F file=@tests/fixtures/invoices/tr-textiles-pdf/invoice.pdf   # real extraction + HS
+```
+
 ## Claude on Vertex AI
 Models resolve on the `global` location (`claude-sonnet-5-5`, `claude-haiku-5-5`). A new project has **zero quota**
 until the models are enabled: Console → Vertex AI → Model Garden → "Claude Sonnet 5.5" / "Claude Haiku 5.5" → **Enable**
-(accept terms). If requests still return 429 `global_online_prediction_requests_per_base_model`, request a quota increase
-on that metric for `anthropic-claude-sonnet` / `anthropic-claude-haiku`. Until then, AI calls fail and the UI shows the error;
+(accept terms). Enabling alone is NOT enough for this project: the admin-granted maximum for the metric
+`global_online_prediction_requests_per_base_model` is **0** for `anthropic-claude-haiku` and `anthropic-claude-sonnet`
+(verified 2026-10-13 via `gcloud alpha services quota update` → `COMMON_QUOTA_CONSUMER_OVERRIDE_TOO_HIGH max=0`).
+File a quota increase: Console → IAM & Admin → Quotas & System Limits → filter metric
+`aiplatform.googleapis.com/global_online_prediction_requests_per_base_model`, dimension `base_model` =
+`anthropic-claude-haiku` and `anthropic-claude-sonnet` → Edit quota → request e.g. 60/min each. Until then, AI calls fail and the UI shows the error;
 set `AI_MOCK=true` on the service to demo without AI.
 
 ## Auth in production
