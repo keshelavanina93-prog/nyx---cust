@@ -45,6 +45,15 @@ curl -s $URL/api/admin/ai-check -H "Authorization: Bearer $SEC"                 
 curl -s -X POST $URL/api/admin/ai-check -H "Authorization: Bearer $SEC" -F file=@tests/fixtures/invoices/tr-textiles-pdf/invoice.pdf   # real extraction + HS
 ```
 
+## Current AI configuration (interim): Gemini on Vertex AI
+Claude quota is still 0 (requests filed, contact connect@nyxcore.space), so the live service runs
+`AI_PROVIDER=vertex-gemini`, `AI_MODEL=gemini-2.5-pro`, `AI_MODEL_FAST=gemini-2.5-flash`, `GOOGLE_VERTEX_LOCATION=europe-west1`
+— billed to the GCP credits. Verified 2026-10-13 on the rendered test invoice: all header fields and 3 lines extracted
+correctly, totals match, HS top-1 correct on 3/3 with citations. Switch back to Claude once quota is granted:
+```bash
+gcloud run services update customs-copilot-ge --project $P --region $R --update-env-vars AI_PROVIDER=vertex,AI_MODEL=claude-sonnet-5-5,AI_MODEL_FAST=claude-haiku-5-5,GOOGLE_VERTEX_LOCATION=global
+```
+
 ## Claude on Vertex AI
 Models resolve on the `global` location (`claude-sonnet-5-5`, `claude-haiku-5-5`). A new project has **zero quota**
 until the models are enabled: Console → Vertex AI → Model Garden → "Claude Sonnet 5.5" / "Claude Haiku 5.5" → **Enable**

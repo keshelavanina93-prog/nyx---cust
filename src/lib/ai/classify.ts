@@ -110,8 +110,11 @@ export async function classifyLine(
     throw new Error(`classification rejected after retries: ${lastError}`);
   }
 
-  // 4. Citation check: citation must reference a real excerpt line AND quote must appear in it; else confidence ≤ 0.5
-  const candidates: HsCandidate[] = out.candidates.map((c) => {
+  // 4. De-duplicate codes (models sometimes pad the required 3 with repeats), then citation check:
+  //    citation must reference a real excerpt line AND quote must appear in it; else confidence ≤ 0.5
+  const seenCodes = new Set<string>();
+  const uniqueCandidates = out.candidates.filter((c) => (seenCodes.has(c.hs_code) ? false : (seenCodes.add(c.hs_code), true)));
+  const candidates: HsCandidate[] = uniqueCandidates.map((c) => {
     const tl = byCode.get(c.hs_code)!;
     const validCitations = c.citations.filter((ci) => {
       const ref = byId.get(ci.tariff_line_id);

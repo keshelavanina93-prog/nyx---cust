@@ -238,8 +238,15 @@ export async function classifyAction(orgSlug: string, shipmentId: string, onlyLi
   if (!tariff) throw new Error("no active tariff version");
   const settings = await loadSettings(db);
   const targets = full.lines.filter((l) => (onlyLineId ? l.id === onlyLineId : !full.decisionByLine.get(l.id)?.humanConfirmed));
+  const CONCURRENCY = Number(process.env.AI_CLASSIFY_CONCURRENCY ?? 4);
+  const results = new Map<string, Awaited<ReturnType<typeof classifyLine>>>();
+  for (let i = 0; i < targets.length; i += CONCURRENCY) {
+    const batch = targets.slice(i, i + CONCURRENCY);
+    const settled = await Promise.all(batch.map((l) => classifyLine(db, { id: l.id, descriptionRaw: l.descriptionRaw, descriptionNormalizedKa: l.descriptionNormalizedKa, sku: l.sku, quantity: l.quantity, unit: l.unit, originCountry: l.originCountry }, { organizationId: ctx.org.id, shipmentId, supplierId: full.shipment.supplierId, supplierName: full.supplier?.name ?? full.shipment.supplierNameRaw, tariffVersionId: tariff.id })));
+    batch.forEach((l, j) => results.set(l.id, settled[j]!));
+  }
   for (const l of targets) {
-    const res = await classifyLine(db, { id: l.id, descriptionRaw: l.descriptionRaw, descriptionNormalizedKa: l.descriptionNormalizedKa, sku: l.sku, quantity: l.quantity, unit: l.unit, originCountry: l.originCountry }, { organizationId: ctx.org.id, shipmentId, supplierId: full.shipment.supplierId, supplierName: full.supplier?.name ?? full.shipment.supplierNameRaw, tariffVersionId: tariff.id });
+    const res = results.get(l.id)!;
     const top = res.candidates[0];
     const values = {
       organizationId: ctx.org.id,

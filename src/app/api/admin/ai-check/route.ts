@@ -45,14 +45,16 @@ export async function POST(req: Request) {
     const { extraction, aiRunId, totalsMismatch, sumOfLines } = await extractInvoice([{ name: f.name, mime: f.type || "application/pdf", data }], { organizationId: null as never, shipmentId: null });
     const db = await getDb();
     const tariff = await getActiveTariffVersion(db);
+    const extractMs = Date.now() - started;
     const hs: unknown[] = [];
+    const t1 = Date.now();
     if (tariff && form.get("classify") !== "false") {
-      for (const l of extraction.lines.slice(0, 5)) {
-        const r = await classifyLine(db, { id: `check-${l.line_no}`, descriptionRaw: l.description_raw, descriptionNormalizedKa: l.description_normalized_ka, sku: l.sku, quantity: l.quantity, unit: l.unit, originCountry: l.origin_country }, { organizationId: "00000000-0000-0000-0000-000000000000", shipmentId: null, supplierId: null, supplierName: extraction.supplier.name, tariffVersionId: tariff.id });
-        hs.push({ line: l.line_no, candidates: r.candidates.map((c) => ({ hs: c.hs_code, conf: c.confidence, cited: c.citations.length > 0 })), questions: r.questionsForUser });
-      }
+      const results = await Promise.all(
+        extraction.lines.slice(0, 10).map((l) => classifyLine(db, { id: `check-${l.line_no}`, descriptionRaw: l.description_raw, descriptionNormalizedKa: l.description_normalized_ka, sku: l.sku, quantity: l.quantity, unit: l.unit, originCountry: l.origin_country }, { organizationId: "00000000-0000-0000-0000-000000000000", shipmentId: null, supplierId: null, supplierName: extraction.supplier.name, tariffVersionId: tariff.id })),
+      );
+      results.forEach((r, i) => hs.push({ line: extraction.lines[i]!.line_no, candidates: r.candidates.map((c) => ({ hs: c.hs_code, conf: c.confidence, cited: c.citations.length > 0 })), questions: r.questionsForUser }));
     }
-    return NextResponse.json({ ok: true, ms: Date.now() - started, aiRunId, totalsMismatch, sumOfLines, extraction, hs, tariff: tariff ? { source: tariff.source, placeholder: tariff.isPlaceholder } : null });
+    return NextResponse.json({ ok: true, ms: Date.now() - started, extractMs, classifyMs: Date.now() - t1, aiRunId, totalsMismatch, sumOfLines, extraction, hs, tariff: tariff ? { source: tariff.source, placeholder: tariff.isPlaceholder } : null });
   } catch (e) {
     return NextResponse.json({ ok: false, ms: Date.now() - started, error: (e as Error).message.slice(0, 500) }, { status: 502 });
   }
